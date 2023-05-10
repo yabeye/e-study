@@ -1,5 +1,5 @@
-import CustomError from '../helpers/CustomError.js';
-import { _500_INTERNAL_SERVER_ERROR } from '../helpers/constants.js';
+import { _500_INTERNAL_SERVER_ERROR } from '../common/constants.js';
+import CustomError from '../common/CustomError.js';
 
 const errorHandler = (err, req, res, next) => {
   let customError = err;
