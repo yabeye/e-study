@@ -1,5 +1,8 @@
+import mongoose from 'mongoose';
+
 import User from '../models/user.model.js';
 import CustomError from '../common/CustomError.js';
+import Question from '../models/question.model.js';
 
 const validateRegisterBody = async (req, res, next) => {
   const { error } = User.validateRegistrationBody(req.body);
@@ -33,11 +36,72 @@ const validateLoginBody = async (req, res, next) => {
 };
 
 const checkUserExists = async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
+  const user = req.body.email
+    ? await User.findOne({ email: req.body.email })
+    : await User.findById(req.user.id);
 
-  if (!user) return next(new CustomError('user not found', 400));
+  if (!user) return next(new CustomError('User not found', 400));
   req.user = user;
   next();
 };
 
-export { validateRegisterBody, validateLoginBody, checkUserExists };
+const validateUserUpdateData = async (req, res, next) => {
+  const prevUser = await User.findById(req.user.id);
+
+  const { firstName, lastName, phone, username, email } = req.body;
+
+  const body = {
+    firstName: firstName ?? prevUser.firstName,
+    lastName: lastName ?? prevUser.lastName,
+    phone: phone ?? prevUser.phone,
+    username: username ?? prevUser.username,
+    email: email ?? prevUser.email,
+  };
+
+  const { error } = User.validatePatchBody(body);
+  if (error) return next(new CustomError(error.details[0].message, 400));
+
+  req.body = body;
+
+  next();
+};
+
+const isValidId = (req, res, next) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return next(new CustomError('Invalid id', 400));
+  }
+
+  next();
+};
+
+// Questions Validations
+const validateNewQuestionBody = async (req, res, next) => {
+  const { error } = Question.validateNewQuestionBody(req.body);
+  if (error) return next(new CustomError(error.details[0].message, 400));
+
+  next();
+};
+
+const checkQuestionData = async (req, res, next) => {
+  const { title, description, category } = req.body;
+  let question = {
+    title: title ?? req.question.title,
+    description: description ?? req.question.description,
+    category: category ?? req.question.category,
+  };
+
+  const { error } = Question.validateNewQuestionBody(question);
+  if (error) return next(new CustomError(error.details[0].message, 400));
+
+  next();
+};
+
+export {
+  validateRegisterBody,
+  validateLoginBody,
+  checkUserExists,
+  validateUserUpdateData,
+  isValidId,
+  validateNewQuestionBody,
+  checkQuestionData,
+};

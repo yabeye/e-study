@@ -1,17 +1,17 @@
 import mongoose from 'mongoose';
 
 import Question from '../models/question.model.js';
-import { ALL_REPORTS } from '../helpers/constants.js';
+import { ALL_REPORTS } from '../common/constants.js';
 
 const AnswerSchema = new mongoose.Schema({
   question: {
     type: mongoose.Schema.ObjectId,
-    ref: 'Question',
+    ref: 'question',
     required: true,
   },
   answeredBy: {
     type: mongoose.Schema.ObjectId,
-    ref: 'User',
+    ref: 'user',
     required: true,
   },
   content: {
@@ -24,13 +24,27 @@ const AnswerSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
-  report: {
-    type: String,
-    enum: ALL_REPORTS,
-  },
+  reportedBy: [
+    {
+      type: {
+        by: {
+          type: mongoose.Schema.ObjectId,
+          ref: 'user',
+        },
+        report: {
+          type: String,
+          enum: ALL_REPORTS,
+        },
+      },
+    },
+  ],
   voteCount: {
     type: Number,
     default: 0,
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
   },
 });
 

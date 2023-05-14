@@ -54,6 +54,24 @@ const UserSchema = new mongoose.Schema(
     profileImage: {
       type: String,
     },
+    question: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'question',
+      },
+    ],
+    answer: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'answer',
+      },
+    ],
+    bookmarks: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'question',
+      },
+    ],
   },
   { collection: 'users', timestamps: true }
 );
@@ -97,7 +115,7 @@ UserSchema.pre('save', function (next) {
   });
 });
 
-const User = mongoose.model('Users', UserSchema);
+const User = mongoose.model('User', UserSchema);
 
 User.validateRegistrationBody = (body) => {
   const schema = Joi.object({
@@ -107,6 +125,25 @@ User.validateRegistrationBody = (body) => {
     phone: Joi.string().min(9).max(14).optional(),
     username: Joi.string().max(64).required(),
     password: Joi.string().min(6).max(64).required(),
+  });
+  return schema.validate(body, {
+    abortEarly: true,
+    errors: {
+      wrap: {
+        label: false,
+      },
+    },
+  });
+};
+
+User.validatePatchBody = (body) => {
+  const schema = Joi.object({
+    firstName: Joi.string().max(64),
+    lastName: Joi.string().max(64),
+    email: Joi.string().email().max(64),
+    phone: Joi.string().min(9).max(14).optional(),
+    username: Joi.string().max(64),
+    password: Joi.string().min(6).max(64),
   });
   return schema.validate(body, {
     abortEarly: true,

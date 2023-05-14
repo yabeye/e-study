@@ -6,6 +6,11 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 
+connectMongoDB();
+import './src/models/question.model.js';
+import './src/models/answer.model.js';
+// import './src/models/user.model.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -16,7 +21,6 @@ import { INVALID_ROUTE } from './src/common/constants.js';
 
 const app = express();
 const PORT = process.env.PORT || 5100;
-connectMongoDB();
 
 app.use(express.json());
 app.use(cors());

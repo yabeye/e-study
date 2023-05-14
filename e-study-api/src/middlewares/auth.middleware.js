@@ -12,8 +12,9 @@ import {
   ONLY_ADMINS_CAN_ACCESS_THIS_ROUTE,
 } from '../common/constants.js';
 import { Roles } from '../common/enums.js';
+import Question from '../models/question.model.js';
 
-const checkAccessToRoute = (req, res, next) => {
+const checkAccessToRoute = async (req, res, next) => {
   const unAuthorizedError = new CustomError(NO_TOKEN_PROVIDED, 401);
   const { JWT_SECRET_KEY } = process.env;
   if (!isTokenIncluded(req)) {
@@ -21,15 +22,16 @@ const checkAccessToRoute = (req, res, next) => {
   }
   const token = getAccessTokenFromHeader(req);
 
-  jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
+  jwt.verify(token, JWT_SECRET_KEY, async (err, decoded) => {
     if (err) {
       return next(unAuthorizedError);
     }
-    req.user = {
-      id: decoded.id,
-      name: decoded.name,
-      role: decoded.role,
-    };
+
+    req.user = await User.findById(decoded.id);
+    if (!req.user) {
+      return next(new CustomError('User not found', 400));
+    }
+
     next();
   });
 };
@@ -44,4 +46,18 @@ const getAdminAccess = asyncErrorHandler(async (req, res, next) => {
   next();
 });
 
-export { checkAccessToRoute, getAdminAccess };
+const getQuestionOwnerAccess = asyncErrorHandler(async (req, res, next) => {
+  const userId = req.user.id;
+  const { id } = req.params;
+  const question = await Question.findById({ _id: id });
+
+  if (question.askedBy != userId) {
+    return next(
+      new CustomError('Only owner of a question can access this question', 403)
+    );
+  }
+  req.question = question;
+  next();
+});
+
+export { checkAccessToRoute, getAdminAccess, getQuestionOwnerAccess };
