@@ -32,7 +32,7 @@ const getAllQuestions = asyncErrorHandler(async (req, res, next) => {
 });
 
 const getQuestion = asyncErrorHandler(async (req, res, next) => {
-  const question = await Question.findOne({
+  let question = await Question.findOne({
     _id: req.question.id,
     isActive: true,
   })
@@ -42,18 +42,30 @@ const getQuestion = asyncErrorHandler(async (req, res, next) => {
       select: '-password -__v -createdAt -updatedAt',
     })
     .populate({
+      path: 'voteCount',
+      model: 'User',
+      select: '-password -__v -createdAt -updatedAt',
+    })
+    .populate({
       path: 'answers',
       model: 'Answer',
       match: { isActive: true },
-    })
-    .populate({
-      path: 'voteCount',
-      model: 'User',
     });
+
+  const answers = await Answer.find({ question: req.question.id }).populate({
+    path: 'answeredBy',
+    model: 'User',
+    select: '-password -__v',
+  });
+
   if (question) {
     return res.status(200).json({
       success: true,
-      question: question,
+      message: 'Question found',
+      data: {
+        question,
+        answers,
+      },
     });
   } else {
     return next(new CustomError('This question was deleted.', 404));

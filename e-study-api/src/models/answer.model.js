@@ -38,10 +38,13 @@ const AnswerSchema = new mongoose.Schema({
       },
     },
   ],
-  voteCount: {
-    type: Number,
-    default: 0,
-  },
+  voteCount: [
+    {
+      type: mongoose.Schema.ObjectId,
+      required: true,
+      ref: 'user',
+    },
+  ],
   isActive: {
     type: Boolean,
     default: true,

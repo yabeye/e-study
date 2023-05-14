@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
+import asyncErrorHandler from 'express-async-handler';
 
 import User from '../models/user.model.js';
 import CustomError from '../common/CustomError.js';
 import Question from '../models/question.model.js';
+import Answer from '../models/answer.model.js';
 
 const validateRegisterBody = async (req, res, next) => {
   const { error } = User.validateRegistrationBody(req.body);
@@ -95,6 +97,35 @@ const checkQuestionData = async (req, res, next) => {
 
   next();
 };
+
+// Answer Validation
+const checkAnswerExist = asyncErrorHandler(async (req, res, next) => {
+  const { answerId } = req.params;
+  const questionId = req.question._id;
+  const question = await Question.findOne({ _id: questionId, isActive: true });
+  if (question) {
+    const answer = await Answer.findOne({
+      _id: answerId,
+      question: questionId,
+    })
+      .populate({
+        path: 'askedBy',
+        model: 'User',
+        select: '-password -__v',
+      })
+      .populate({
+        path: 'question',
+        model: 'Question',
+      });
+    if (!answer) {
+      return next(new CustomError('There is no such answer with that id'), 400);
+    }
+    req.answer = answer;
+    next();
+  } else {
+    return next(new CustomError('This question was deleted.'));
+  }
+});
 
 export {
   validateRegisterBody,

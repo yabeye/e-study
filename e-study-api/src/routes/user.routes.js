@@ -10,13 +10,14 @@ import {
 } from '../middlewares/auth.middleware.js';
 import {
   checkUserExists,
+  isValidId,
   validateUserUpdateData,
 } from '../middlewares/validation.middleware.js';
 
 const router = express.Router();
 
 // OPEN ROUTES
-router.get('/:id', getUserById);
+router.get('/:id', [isValidId], getUserById);
 
 // PROTECTED ROUTES
 router.use(checkAccessToRoute);

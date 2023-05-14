@@ -15,30 +15,34 @@ const checkQuestionExist = asyncErrorHandler(async (req, res, next) => {
 });
 
 const checkAnswerExist = asyncErrorHandler(async (req, res, next) => {
-  const { answerId } = req.params;
-  const questionId = req.question._id;
-  const question = await Question.findOne({ _id: questionId, isActive: true });
-  if (question) {
-    const answer = await Answer.findOne({
-      _id: answerId,
-      question: questionId,
-    })
-      .populate({
-        path: 'user',
-        // select: 'id name lastname ',
-      })
-      .populate({
-        path: 'question',
-        // select: 'id title subtitle',
-      });
-    if (!answer) {
-      return next(new CustomError('There is no such answer with that id'), 400);
-    }
-    req.answer = answer;
-    next();
-  } else {
-    return next(new CustomError('This question was deleted.'));
+  const { id } = req.params;
+
+  const answer = await Answer.findOne({
+    _id: id,
+  });
+  // .populate({
+  //   path: 'answeredBy',
+  //   model: 'User',
+  //   select: '-password -__v',
+  // });
+  // .populate({
+  //   path: 'question',
+  //   model: 'Question',
+  //   // select: 'id title subtitle',
+  // });
+  if (!answer) {
+    return next(new CustomError('Answer not found!'), 404);
   }
+
+  const question = await Question.findById({ _id: answer.question });
+
+  if (!question) {
+    return next(new CustomError('Question is not found', 404));
+  }
+  req.answer = answer;
+  req.question = question;
+
+  next();
 });
 
 export { checkQuestionExist, checkAnswerExist };
