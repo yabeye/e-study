@@ -5,6 +5,7 @@ import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
+import ip from 'ip';
 
 connectMongoDB();
 import './src/models/question.model.js';
@@ -46,4 +47,5 @@ app.get('*', (_, res) => {
 
 app.listen(PORT, () => {
   console.log(`The server is started on ${PORT} port.`);
+  console.dir(ip.address());
 });

@@ -15,6 +15,7 @@ const router = express.Router({ mergeParams: true });
 // PROTECTED ROUTES
 router.use(checkAccessToRoute);
 
+//TODO: File upload using multer for pdf, docs, ppts,  images etc ...
 router.post('/:id', [isValidId, checkQuestionExist], addNewAnswerToQuestion);
 router.patch('/:id', [isValidId, checkAnswerExist], updateAnswer);
 

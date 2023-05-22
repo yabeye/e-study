@@ -85,11 +85,12 @@ const validateNewQuestionBody = async (req, res, next) => {
 };
 
 const checkQuestionData = async (req, res, next) => {
-  const { title, description, category } = req.body;
+  const { title, description, category, subject } = req.body;
   let question = {
     title: title ?? req.question.title,
     description: description ?? req.question.description,
     category: category ?? req.question.category,
+    subject: subject ?? req.question.subject,
   };
 
   const { error } = Question.validateNewQuestionBody(question);

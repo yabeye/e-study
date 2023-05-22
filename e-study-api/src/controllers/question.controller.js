@@ -73,12 +73,13 @@ const getQuestion = asyncErrorHandler(async (req, res, next) => {
 });
 
 const addQuestion = asyncErrorHandler(async (req, res, next) => {
-  const { title, description, category } = req.body;
+  const { title, description, category, subject } = req.body;
 
   const question = await Question({
     title,
     description,
     category,
+    subject,
     askedBy: req.user.id,
   });
   await question.save();
@@ -95,13 +96,16 @@ const addQuestion = asyncErrorHandler(async (req, res, next) => {
 });
 
 const updateQuestion = asyncErrorHandler(async (req, res, next) => {
-  const { title, description, category, isOpen } = req.body;
+  const { title, description, category, subject, isOpen } = req.body;
+
+  console.log('req.question', req.question);
 
   let question = {
     title: title ?? req.question.title,
     description: description ?? req.question.description,
     category: category ?? req.question.category,
     isOpen: isOpen ?? req.question.isOpen,
+    subject: subject ?? req.question.subject,
     voteCount: [],
   };
 

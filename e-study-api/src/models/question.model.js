@@ -23,6 +23,11 @@ const QuestionSchema = new mongoose.Schema({
     required: [true, 'Please provide a category'],
     maxLength: 64,
   },
+  subject: {
+    type: String,
+    required: [true, 'Please provide a subject'],
+    maxLength: 64,
+  },
   isOpen: {
     type: Boolean,
     default: true,
@@ -74,8 +79,9 @@ const Question = mongoose.model('Question', QuestionSchema);
 Question.validateNewQuestionBody = (body) => {
   const schema = Joi.object({
     title: Joi.string().min(5).max(64).required(),
-    description: Joi.string().min(10).max(64).required(),
+    description: Joi.string().min(10).max(255).required(),
     category: Joi.string().max(64).required(),
+    subject: Joi.string().max(64).required(),
   });
   return schema.validate(body, {
     abortEarly: true,
