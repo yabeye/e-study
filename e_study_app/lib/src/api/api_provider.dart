@@ -25,7 +25,9 @@ class ApiProvider {
   Future<dynamic> post(String url, Object? body) async {
     var responseJson;
     try {
+      print("CALL ${_baseUrl + url}");
       final completeUri = Uri.parse(_baseUrl + url);
+      print("HOST ${completeUri.data}");
       final response =
           await http.post(completeUri, body: jsonEncode(body), headers: {
         'Content-Type': 'application/json',
@@ -41,6 +43,8 @@ class ApiProvider {
   }
 
   dynamic _response(http.Response response) {
+    var responseJson = json.decode(response.body.toString());
+    debugPrint("$responseJson");
     switch (response.statusCode) {
       case 200:
       case 201:

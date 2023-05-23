@@ -42,7 +42,7 @@ class QuestionCard extends StatelessWidget {
             child: Text(
               question.category,
               style: boldTextStyle(color: white),
-            ),
+            ).paddingSymmetric(horizontal: 8),
           ).visible(withCategoryTag),
           Container(
             margin: const EdgeInsets.only(bottom: 12),

@@ -10,7 +10,6 @@ const QuestionSchema = new mongoose.Schema({
     required: [true, 'Please provide a title'],
     minlength: [5, 'Please provide a title at least 5 characters'],
     maxLength: 1024,
-    unique: true,
   },
   description: {
     type: String,

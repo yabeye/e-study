@@ -52,7 +52,7 @@ class AnswerCard extends StatelessWidget {
                           ),
                   ).paddingSymmetric(horizontal: 4),
                   Text(
-                    ("yeabsera" ?? askedBy.username ?? ""),
+                    (askedBy.username),
                     style: secondaryTextStyle(),
                   ).paddingSymmetric(vertical: 8),
                 ],
@@ -63,12 +63,16 @@ class AnswerCard extends StatelessWidget {
               )
             ],
           ),
-          Text(
-            answer.content,
-            style: primaryTextStyle(
-              size: textSecondarySizeGlobal.toInt(),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              answer.content,
+              style: primaryTextStyle(
+                size: textSecondarySizeGlobal.toInt(),
+              ),
             ),
-          )
+          ).paddingSymmetric(horizontal: 4),
+          20.height,
         ],
       ).paddingSymmetric(horizontal: 8),
     );

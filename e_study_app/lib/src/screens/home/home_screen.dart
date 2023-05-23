@@ -31,16 +31,26 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _questionProvider = context.read<QuestionProvider>();
     afterBuildCreated(() async {
-      _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
-        await fetchAllQuestions();
-      });
+      await fetchAllQuestions();
+      // _timer = Timer.periodic(const Duration(seconds: 60), (timer) async {
+      //   await fetchAllQuestions();
+      // });
     });
   }
 
-  Future<void> fetchAllQuestions() async {
-    await context.read<QuestionProvider>().getQuestions();
+  @override
+  void dispose() {
+    // _timer!.cancel();
+    super.dispose();
+  }
 
-    allQuestions = _questionProvider.questions;
+  Future<void> fetchAllQuestions() async {
+    _isLoading = true;
+    setState(() {});
+    await context.read<QuestionProvider>().getQuestions();
+    _isLoading = false;
+    setState(() {});
+    allQuestions = [..._questionProvider.questions];
     filterQuestion();
   }
 
@@ -86,49 +96,54 @@ class _HomeScreenState extends State<HomeScreen> {
           preferredSize: const Size.fromHeight(kToolbarHeight + 20),
           child: Container(
             color: primaryColor,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              child: CommonDropDownComponent(
-                items: categories,
-                defaultValue: _filterKey,
-                callback: (v) {
-                  _filterKey = v ?? "All";
-                  setState(() {});
-                  filterQuestion();
-                },
-              ),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: CommonDropDownComponent(
+                    items: categories,
+                    defaultValue: _filterKey,
+                    callback: (v) {
+                      _filterKey = v ?? "All";
+                      setState(() {});
+                      filterQuestion();
+                    },
+                  ),
+                ),
+                const LinearProgressIndicator().visible(
+                  allQuestions.isEmpty && _isLoading,
+                ),
+              ],
             ),
           ),
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: fetchAllQuestions,
-              child: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: 15.height,
+      body: RefreshIndicator(
+        onRefresh: fetchAllQuestions,
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: 15.height,
+            ),
+            SliverToBoxAdapter(child: 10.height),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (_, index) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: QuestionCard(
+                    question: filteredQuestions[index],
                   ),
-                  SliverToBoxAdapter(child: 10.height),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (_, index) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: QuestionCard(
-                          question: filteredQuestions[index],
-                        ),
-                      ),
-                      childCount: filteredQuestions.length,
-                      // childCount: _availableHandyMen.length,
-                    ),
-                  ),
-                ],
+                ),
+                childCount: filteredQuestions.length,
+                // childCount: _availableHandyMen.length,
               ),
             ),
+          ],
+        ),
+      ),
     );
   }
 }

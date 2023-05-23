@@ -3,6 +3,26 @@ import asyncErrorHandler from 'express-async-handler';
 import Answer from '../models/answer.model.js';
 import User from '../models/user.model.js';
 import CustomError from '../common/CustomError.js';
+import Question from '../models/question.model.js';
+
+// const getAllAnswers = asyncErrorHandler(async (req, res, next) => {
+//   const { id } = req.params;
+
+//   const answer = await Answer.create({
+//     ...params,
+//     answeredBy: req.user.id,
+//     question: id,
+//   });
+
+//   return res.status(200).json({
+//     success: true,
+//     message: 'Answered Successfully',
+//     data: {
+//       questionId: id,
+//       answer,
+//     },
+//   });
+// });
 
 const addNewAnswerToQuestion = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
@@ -22,6 +42,10 @@ const addNewAnswerToQuestion = asyncErrorHandler(async (req, res, next) => {
   const user = await User.findById({ _id: req.user.id });
   user.answer.push(answer);
   await user.save();
+
+  const question = await Question.findById({ _id: req.question._id });
+  question.answers.push(answer._id);
+  await question.save();
 
   return res.status(200).json({
     success: true,

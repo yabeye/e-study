@@ -4,9 +4,11 @@ import 'package:nb_utils/nb_utils.dart';
 import 'package:e_study_app/src/common/constants.dart';
 import 'package:e_study_app/src/models/answer.model.dart';
 import 'package:e_study_app/src/models/question.model.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/files.dart';
 import '../../models/user.model.dart';
+import '../../providers/question_provider.dart';
 import '../../theme/theme.dart';
 import '../../widgets/common_ui.dart';
 import '../question/question_card.dart';
@@ -19,128 +21,19 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  final List<Question> searchedQuestions = [
-    Question(
-      id: "id",
-      title: "What is mitochondria ?",
-      description:
-          "Can you explain in detail what mitochondria is in human cell, and also the difference between human and animal mitochondria ? ",
-      category: categories[1],
-      isOpen: true,
-      askedBy: User(
-        id: "id",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email",
-        phone: "phone",
-        username: "liya",
-        roles: "roles",
-        question: [],
-        answer: [],
-        bookmarks: [],
-      ),
-      answers: [
-        Answer(
-          id: "id",
-          question: "id",
-          answeredBy: User(
-            id: "id",
-            firstName: "firstName",
-            lastName: "lastName",
-            email: "email",
-            phone: "phone",
-            username: "yeabsera",
-            roles: "roles",
-            question: [],
-            answer: [],
-            bookmarks: [],
-          ),
-          content:
-              "an organelle found in large numbers in most cells, in which the biochemical processes of respiration and energy production occur. It has a double membrane, the inner part being folded inwards to form layers (cristae).",
-          createdAt: DateTime.now(),
-          voteCount: [],
-          isActive: false,
-          reportedBy: [],
-        ),
-      ],
-      createdAt: DateTime.now(),
-      hashTags: ["biology", "cell"],
-    ),
-    Question(
-      id: "id",
-      title: "Explain in detail a quadratic equation in math",
-      description: "description",
-      category: categories[3],
-      isOpen: true,
-      askedBy: User(
-        id: "id",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email",
-        phone: "phone",
-        username: "dimond",
-        roles: "roles",
-        question: [],
-        answer: [],
-        bookmarks: [],
-      ),
-      answers: [],
-      createdAt: DateTime.now(),
-      hashTags: ["math", "equations"],
-    ),
-    Question(
-      id: "id",
-      title:
-          "How much energy does a bullet has if it leaves the muzzle at 300Km/hr at time t",
-      description: "description",
-      category: categories[1],
-      isOpen: true,
-      askedBy: User(
-        id: "id",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email",
-        phone: "phone",
-        username: "liya",
-        roles: "roles",
-        question: [],
-        answer: [],
-        bookmarks: [],
-      ),
-      answers: [],
-      createdAt: DateTime.now(),
-      hashTags: ["physics"],
-    ),
-  ];
-  final List<FileModel> searchedFiles = [
-    FileModel(
-      name: "2014 Grade 12 National Civics Exam Preparation test",
-      size: "5MB",
-      category: categories[2],
-      uploadedBy: User(
-        id: "id",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email",
-        phone: "phone",
-        username: "abel",
-        roles: "roles",
-        question: [],
-        answer: [],
-        bookmarks: [],
-      ),
-      createdAt: DateTime.now(),
-    ),
-  ];
+  late final QuestionProvider _questionProvider;
+  List<Question> searchedQuestions = [];
+  List<FileModel> searchedFiles = [];
 
   late final TextEditingController _searchController;
 
-  bool _isFilesTab = false;
+  bool _isFilesTab = true;
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
+    _questionProvider = context.read<QuestionProvider>();
   }
 
   @override
@@ -149,8 +42,17 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  void searchFiles() {
-    toast("Searching files ...");
+  void _searchFiles() {
+    print("Searching files ...${_searchController.text}");
+    searchedQuestions = [];
+    searchedFiles = [];
+
+    searchedQuestions = _questionProvider.questions
+        .where((q) => (q.title.contains(_searchController.text) ||
+            q.description.contains(_searchController.text)))
+        .toList();
+
+    setState(() {});
   }
 
   @override
@@ -170,7 +72,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 horizontal: 16,
                 vertical: 12,
               ),
-              child: TextField(
+              child: TextFormField(
                 autofocus: true,
                 controller: _searchController,
                 style: boldTextStyle(
@@ -182,9 +84,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   hintStyle: secondaryTextStyle(),
                   prefixIcon: const Icon(Icons.search),
                 ),
-                onSubmitted: (v) {
+                onFieldSubmitted: (v) {
                   hideKeyboard(context);
                 },
+                onChanged: (_) => _searchFiles(),
               ),
             ),
           ),

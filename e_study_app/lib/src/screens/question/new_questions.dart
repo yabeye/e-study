@@ -44,6 +44,8 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
   }
 
   askNewQuestion() async {
+    _isLoading = true;
+    setState(() {});
     try {
       await _questionProvider.addNewQuestions(
         title: _titleController.text,

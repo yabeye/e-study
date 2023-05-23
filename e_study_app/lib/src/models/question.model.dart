@@ -69,7 +69,7 @@ class Question {
       'isOpen': isOpen,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'askedBy': askedBy.toJson(),
-      'answers': answers.map((x) => x.toMap()).toList(),
+      'answers': answers.map((x) => x.toJson()).toList(),
     };
   }
 
@@ -82,7 +82,8 @@ class Question {
       isOpen: map['isOpen'] ?? false,
       createdAt: DateTime.parse(map["createdAt"]),
       askedBy: User.fromJson(map['askedBy']),
-      answers: List<Answer>.from(map['answers']?.map((x) => Answer.fromMap(x))),
+      answers:
+          List<Answer>.from(map['answers']?.map((x) => Answer.fromJson(x))),
     );
   }
 

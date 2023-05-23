@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:e_study_app/src/models/answer.model.dart';
 import 'package:e_study_app/src/models/question.model.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -34,8 +35,18 @@ class QuestionProvider extends ChangeNotifier {
       "category": category,
       "subject": subject,
     });
+  }
 
-    await getQuestions();
+  Future<Answer> addAnswer({
+    required String id,
+    required String content,
+  }) async {
+    final response = await _provider.post("answers/$id", {
+      "content": content,
+    });
+    final resQuestions = response['data']['answer'];
+
+    return Answer.fromJson(resQuestions);
   }
 
   void clear() {

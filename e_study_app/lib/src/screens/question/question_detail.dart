@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:e_study_app/src/common/extensions/string_extensions.dart';
 import 'package:e_study_app/src/models/question.model.dart';
 import 'package:e_study_app/src/screens/question/answer_card.dart';
@@ -5,10 +7,14 @@ import 'package:e_study_app/src/widgets/common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:provider/provider.dart';
 import 'package:text_scroll/text_scroll.dart';
 
+import '../../api/exceptions.dart';
 import '../../common/asset_locations.dart';
 import '../../common/constants.dart';
+import '../../providers/question_provider.dart';
+import '../../theme/theme.dart';
 
 class QuestionDetail extends StatefulWidget {
   const QuestionDetail({super.key, required this.question});
@@ -20,8 +26,69 @@ class QuestionDetail extends StatefulWidget {
 }
 
 class _QuestionDetailState extends State<QuestionDetail> {
+  late final QuestionProvider _questionProvider;
+  late final TextEditingController _answerController;
+  FocusNode _answerFocus = FocusNode(); //create focus node
+
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _questionProvider = context.read<QuestionProvider>();
+    _answerController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _answerController.dispose();
+    super.dispose();
+  }
+
+  _answerQuestion() async {
+    if (_answerController.text.length < 10) {
+      toasty(
+        context,
+        "Add a sufficient answer\n   (at least 10 words)",
+        textColor: redColor,
+      );
+
+      return;
+    }
+
+    _isLoading = true;
+    setState(() {});
+    try {
+      final answer = await _questionProvider.addAnswer(
+        id: widget.question.id,
+        content: _answerController.text,
+      );
+
+      // ignore: use_build_context_synchronously
+      toasty(context, "Answer Successfully!");
+      _answerController.text = "";
+      widget.question.answers.add(answer);
+      _answerFocus.unfocus();
+
+      setState(() {});
+    } on BadRequestException catch (e) {
+      toasty(context, e.message);
+    } on UnAuthorizedException catch (e) {
+      toasty(context, e.message);
+    } on SocketException catch (e) {
+      toasty(context, e.message);
+    } catch (e) {
+      print(e.toString());
+      toasty(context, "We are unable to do that!");
+    }
+
+    _isLoading = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    widget.question.answers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     final question = widget.question;
     final askedBy = question.askedBy;
     return Scaffold(
@@ -122,10 +189,10 @@ class _QuestionDetailState extends State<QuestionDetail> {
               ),
               Row(
                 children: [
-                  svgUpVoteSelected.svgImage(size: 32, color: black),
+                  svgUpVote.svgImage(size: 32, color: black),
                   const SizedBox().paddingSymmetric(horizontal: 2),
                   Text(
-                    "1",
+                    "0",
                     style: secondaryTextStyle(),
                   ),
                   const SizedBox().paddingSymmetric(horizontal: 16),
@@ -145,6 +212,45 @@ class _QuestionDetailState extends State<QuestionDetail> {
         ),
         const SliverToBoxAdapter(
           child: Divider(),
+        ),
+        SliverToBoxAdapter(
+          child: 5.height,
+        ),
+        SliverToBoxAdapter(
+          child: TextField(
+            focusNode: _answerFocus,
+            controller: _answerController,
+            // minLines: 4,
+            style: boldTextStyle(
+              weight: FontWeight.normal,
+            ),
+            decoration: inputDecoration(
+              context,
+              hintText: "Add your answer ... ",
+              hintStyle: secondaryTextStyle(),
+            ),
+            maxLines: 3, //or null
+            onSubmitted: (v) {
+              hideKeyboard(context);
+            },
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: 5.height,
+        ),
+        SliverToBoxAdapter(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              AppButton(
+                onTap: _answerQuestion,
+                text: 'Add Answer',
+                textColor: whiteColor,
+                color: primaryColor,
+                width: context.width() * .1,
+              ),
+            ],
+          ),
         ),
         SliverToBoxAdapter(
           child: 5.height,
