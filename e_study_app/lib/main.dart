@@ -1,4 +1,6 @@
+import 'package:e_study_app/src/providers/auth_provider.dart';
 import 'package:e_study_app/src/providers/question_provider.dart';
+import 'package:e_study_app/src/screens/splash_screeen.dart';
 import 'package:e_study_app/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:e_study_app/src/screens/main_screen.dart';
@@ -18,12 +20,13 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<QuestionProvider>(create: (_) => QuestionProvider()),
+        Provider<AuthProvider>(create: (_) => AuthProvider()),
       ],
       child: MaterialApp(
         title: 'EStudy App',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme(),
-        home: const MainScreen(),
+        home: const SplashScreen(),
       ),
     );
   }

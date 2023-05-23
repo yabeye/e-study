@@ -43,7 +43,7 @@ dependencies:
   intl: ^0.18.1
   nb_utils: ^5.0.8
   provider: ^6.0.5
-  shared_preferences: ^2.1.0
+  shared_preferences: ^2.1.1
   text_scroll: ^0.2.0
 
 dev_dependencies:
