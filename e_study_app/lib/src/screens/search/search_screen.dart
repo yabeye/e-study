@@ -34,6 +34,9 @@ class _SearchScreenState extends State<SearchScreen> {
     super.initState();
     _searchController = TextEditingController();
     _questionProvider = context.read<QuestionProvider>();
+
+    searchedQuestions = _questionProvider.questions;
+    searchedFiles = _questionProvider.files;
   }
 
   @override
@@ -48,8 +51,18 @@ class _SearchScreenState extends State<SearchScreen> {
     searchedFiles = [];
 
     searchedQuestions = _questionProvider.questions
-        .where((q) => (q.title.contains(_searchController.text) ||
-            q.description.contains(_searchController.text)))
+        .where((q) => (q.title
+                .toLowerCase()
+                .contains(_searchController.text.toLowerCase()) ||
+            q.description
+                .toLowerCase()
+                .contains(_searchController.text.toLowerCase())))
+        .toList();
+
+    searchedFiles = _questionProvider.files
+        .where((q) => (q.name
+            .toLowerCase()
+            .contains(_searchController.text.toLowerCase())))
         .toList();
 
     setState(() {});

@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
+      // unique: true,
       maxLength: 64,
     },
     phone: {
@@ -32,13 +32,13 @@ const UserSchema = new mongoose.Schema(
       minLength: 9,
       maxLength: 13,
       trim: true,
-      unique: true,
+      // unique: true,
     },
     username: {
       type: String,
       required: true,
       trim: true,
-      unique: true,
+      // unique: true,
       maxLength: 64,
     },
     password: {

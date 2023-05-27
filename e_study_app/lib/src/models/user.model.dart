@@ -9,29 +9,29 @@ User userFromJson(String str) => User.fromJson(json.decode(str));
 String userToJson(User data) => json.encode(data.toJson());
 
 class User {
-  final String id;
-  final String firstName;
-  final String lastName;
-  final String email;
-  final String phone;
-  final String username;
-  final String roles;
-  final List<String> question;
-  final List<String> answer;
-  final List<String> bookmarks;
-  final String? profilePic;
+  String? id;
+  String? firstName;
+  String? lastName;
+  String? email;
+  String? phone;
+  String? username;
+  String? roles;
+  List<String> question;
+  List<String> answer;
+  List<String> bookmarks;
+  String? profilePic;
 
   User({
-    required this.id,
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    required this.phone,
-    required this.username,
-    required this.roles,
-    required this.question,
-    required this.answer,
-    required this.bookmarks,
+    this.id,
+    this.firstName,
+    this.lastName,
+    this.email,
+    this.phone,
+    this.username,
+    this.roles,
+    this.question = const [],
+    this.answer = const [],
+    this.bookmarks = const [],
     this.profilePic,
   });
 

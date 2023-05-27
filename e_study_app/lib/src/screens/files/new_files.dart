@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:e_study_app/src/common/constants.dart';
 import 'package:e_study_app/src/theme/theme.dart';
 import 'package:e_study_app/src/widgets/common_ui.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -12,6 +15,8 @@ class NewFileScreen extends StatefulWidget {
 }
 
 class _NewFileScreenState extends State<NewFileScreen> {
+  String? _fileName;
+
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
   bool _isCategoryError = false;
@@ -28,6 +33,17 @@ class _NewFileScreenState extends State<NewFileScreen> {
     _nameController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  void _openFileExplorer() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      setState(() {
+        _fileName = result.files.single.name;
+        _nameController.text =
+            _fileName ?? "unnamed (${Random().nextInt(1000000)})";
+      });
+    }
   }
 
   @override
@@ -50,6 +66,7 @@ class _NewFileScreenState extends State<NewFileScreen> {
           30.height,
           CommonDropDownComponent(
             items: categories.skip(1).toList(),
+            defaultValue: "Natural",
             placeholder: "Select Category",
             callback: (v) {
               toast(v);
@@ -89,9 +106,7 @@ class _NewFileScreenState extends State<NewFileScreen> {
               ),
             ),
             child: AppButton(
-              onTap: () {
-                toast("Uploading file...");
-              },
+              onTap: _openFileExplorer,
               text: "Select File",
               textColor: primaryColor,
               child: Row(
@@ -112,7 +127,11 @@ class _NewFileScreenState extends State<NewFileScreen> {
           50.height,
           AppButton(
             onTap: () {
-              toast("Uploading file...");
+              toasty(
+                context,
+                "File has been uploaded!, it will be live once it has been reviewed! ",
+                length: Toast.LENGTH_LONG,
+              );
             },
             text: "Upload",
             textColor: whiteColor,

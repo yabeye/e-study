@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<QuestionProvider>(create: (_) => QuestionProvider()),
         Provider<AuthProvider>(create: (_) => AuthProvider()),
+        Provider<QuestionProvider>(create: (_) => QuestionProvider()),
       ],
       child: MaterialApp(
         title: 'EStudy App',

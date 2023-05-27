@@ -27,7 +27,7 @@ router.get('/all', getAllQuestions);
 // PROTECTED ROUTES
 router.use(checkAccessToRoute);
 router.post('/ask', [validateNewQuestionBody], addQuestion);
-//TODO: File upload using multer for pdf, docs,ppts,  images etc ...
+//TODO: File upload using multer for pdf, docs, ppts,  images etc ...
 router.patch(
   '/:id',
   [getQuestionOwnerAccess, checkQuestionExist, checkQuestionData],

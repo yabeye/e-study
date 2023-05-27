@@ -107,13 +107,25 @@ const updateQuestion = asyncErrorHandler(async (req, res, next) => {
     isOpen: isOpen ?? req.question.isOpen,
     subject: subject ?? req.question.subject,
     voteCount: [],
+    voteCountDown: [],
   };
 
-  if (req.body.voting) {
-    const index = req.question.voteCount.indexOf(req.user.id);
+  if (req.body.voting == true) {
+    let index = req.question.voteCount.indexOf(req.user.id);
     index === -1
       ? question.voteCount.push(req.user.id)
       : question.voteCount.splice(index, 1);
+
+    index = req.question.voteCountDown.indexOf(req.user.id);
+    index !== -1 ? console.log() : question.voteCountDown.splice(index, 1);
+  } else if (req.body.voting == false) {
+    let index = req.question.voteCountDown.indexOf(req.user.id);
+    index === -1
+      ? question.voteCountDown.push(req.user.id)
+      : question.voteCountDown.splice(index, 1);
+
+    index = req.question.voteCount.indexOf(req.user.id);
+    index !== -1 ? console.log() : question.voteCount.splice(index, 1);
   }
 
   question = await Question.findByIdAndUpdate(

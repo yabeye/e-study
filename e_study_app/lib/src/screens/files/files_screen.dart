@@ -1,9 +1,11 @@
+import 'package:e_study_app/src/providers/question_provider.dart';
 import 'package:e_study_app/src/screens/files/file_card.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:e_study_app/src/common/constants.dart';
 import 'package:e_study_app/src/models/answer.model.dart';
 import 'package:e_study_app/src/models/question.model.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/files.dart';
 import '../../models/user.model.dart';
@@ -18,86 +20,16 @@ class FilesScreen extends StatefulWidget {
 }
 
 class _FilesScreenState extends State<FilesScreen> {
-  final List<FileModel> allFiles = [
-    FileModel(
-      name: "2012 Biology Model Exam for Bethelehem Secondary School",
-      size: "22MB",
-      category: categories[1],
-      uploadedBy: User(
-        id: "id",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email",
-        phone: "phone",
-        username: "liya",
-        roles: "roles",
-        question: [],
-        answer: [],
-        bookmarks: [],
-      ),
-      createdAt: DateTime.now(),
-    ),
-    FileModel(
-      name: "Math Note on Trigonometry",
-      size: "12MB",
-      category: categories[3],
-      uploadedBy: User(
-        id: "id",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email",
-        phone: "phone",
-        username: "dimond",
-        roles: "roles",
-        question: [],
-        answer: [],
-        bookmarks: [],
-      ),
-      createdAt: DateTime.now(),
-    ),
-    FileModel(
-      name: "2010 Mathematics Model Exam for Bethelehem Secondary School",
-      size: "55MB",
-      category: categories[3],
-      uploadedBy: User(
-        id: "id",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email",
-        phone: "phone",
-        username: "yeabsera",
-        roles: "roles",
-        question: [],
-        answer: [],
-        bookmarks: [],
-      ),
-      createdAt: DateTime.now(),
-    ),
-    FileModel(
-      name: "2014 Grade 12 National Civics Exam Preparation test",
-      size: "5MB",
-      category: categories[2],
-      uploadedBy: User(
-        id: "id",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email",
-        phone: "phone",
-        username: "abel",
-        roles: "roles",
-        question: [],
-        answer: [],
-        bookmarks: [],
-      ),
-      createdAt: DateTime.now(),
-    ),
-  ];
+  late final QuestionProvider _questionProvider;
+  List<FileModel> allFiles = [];
   List<FileModel> filteredFiles = [];
   String _filterKey = "All";
 
   @override
   void initState() {
     super.initState();
+    _questionProvider = context.read<QuestionProvider>();
+    allFiles = _questionProvider.files;
     filteredFiles = allFiles;
   }
 

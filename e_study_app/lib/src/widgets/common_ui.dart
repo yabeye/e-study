@@ -296,6 +296,7 @@ AppBar appBar({
   Widget? backWidget,
   bool showBack = false,
   bool isCenterTitle = false,
+  List<Widget>? actions,
 }) {
   return appBarWidget(
     title,
@@ -305,5 +306,6 @@ AppBar appBar({
     showBack: showBack,
     center: isCenterTitle,
     backWidget: backWidget ?? const BackWidget(),
+    actions: actions,
   );
 }

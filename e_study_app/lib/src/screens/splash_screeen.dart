@@ -2,10 +2,13 @@ import 'package:e_study_app/src/common/asset_locations.dart';
 import 'package:e_study_app/src/common/constants.dart';
 import 'package:e_study_app/src/common/extensions/string_extensions.dart';
 import 'package:e_study_app/src/providers/auth_provider.dart';
+import 'package:e_study_app/src/screens/home/choose_auth.dart';
 import 'package:e_study_app/src/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
+
+import '../models/user.model.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,15 +23,29 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _authProvider = context.read<AuthProvider>();
     afterBuildCreated(() async {
-      await 3.seconds.delay;
+      // await 3.seconds.delay;
 
       // Checking wherether user logged in or not!
       // ignore: use_build_context_synchronously
-      // _authProvider = context.read<AuthProvider>().isLoggedIn;
+      final isLoggedIn = _authProvider.isLoggedIn;
+      await _authProvider.checkAuth();
 
-      // ignore: use_build_context_synchronously
-      const MainScreen().launch(context, isNewTask: true);
+      User? currentUser = _authProvider.currentUser;
+      print(
+        "Current user: $currentUser",
+      );
+
+      if (!_authProvider.isLoggedIn) {
+        // go to choose
+        const ChooseAuth().launch(context, isNewTask: true);
+      } else {
+        // go to home
+        print("Go to just home");
+        // ignore: use_build_context_synchronously
+        const MainScreen().launch(context, isNewTask: true);
+      }
     });
   }
 

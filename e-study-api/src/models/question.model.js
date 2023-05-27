@@ -61,6 +61,13 @@ const QuestionSchema = new mongoose.Schema({
       ref: 'user',
     },
   ],
+  voteCountDown: [
+    {
+      type: mongoose.Schema.ObjectId,
+      required: true,
+      ref: 'user',
+    },
+  ],
   answers: [
     {
       type: mongoose.Schema.ObjectId,

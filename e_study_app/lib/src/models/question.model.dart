@@ -2,17 +2,11 @@
 //
 //     final question = questionFromJson(jsonString);
 
+import 'package:e_study_app/src/models/user.model.dart';
+import 'package:meta/meta.dart';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
-
-import 'package:e_study_app/src/models/answer.model.dart';
-import 'package:e_study_app/src/models/user.model.dart';
-
 Question questionFromJson(String str) => Question.fromJson(json.decode(str));
-List<User> userFromJson(String str) =>
-    List<User>.from(json.decode(str).map((x) => User.fromJson(x)));
 
 String questionToJson(Question data) => json.encode(data.toJson());
 
@@ -21,20 +15,31 @@ class Question {
   final String title;
   final String description;
   final String category;
+  final String subject;
   final bool isOpen;
   final DateTime createdAt;
   final User askedBy;
-  final List<Answer> answers;
-  List<String> hashTags;
+  final List<dynamic> voteCount;
+  final List<dynamic> voteCountDown;
+  final List<dynamic> answers;
+  final bool isActive;
+  final List<dynamic> reportedBy;
+  final List<String> hashTags;
+
   Question({
     required this.id,
     required this.title,
     required this.description,
     required this.category,
+    required this.subject,
     required this.isOpen,
     required this.createdAt,
     required this.askedBy,
+    required this.voteCount,
+    required this.voteCountDown,
     required this.answers,
+    required this.isActive,
+    required this.reportedBy,
     this.hashTags = const [],
   });
 
@@ -43,86 +48,63 @@ class Question {
     String? title,
     String? description,
     String? category,
+    String? subject,
     bool? isOpen,
     DateTime? createdAt,
     User? askedBy,
-    List<Answer>? answers,
-  }) {
-    return Question(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      category: category ?? this.category,
-      isOpen: isOpen ?? this.isOpen,
-      createdAt: createdAt ?? this.createdAt,
-      askedBy: askedBy ?? this.askedBy,
-      answers: answers ?? this.answers,
-    );
-  }
+    List<dynamic>? voteCount,
+    List<dynamic>? voteCountDown,
+    List<dynamic>? answers,
+    bool? isActive,
+    List<dynamic>? reportedBy,
+  }) =>
+      Question(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        description: description ?? this.description,
+        category: category ?? this.category,
+        subject: subject ?? this.subject,
+        isOpen: isOpen ?? this.isOpen,
+        createdAt: createdAt ?? this.createdAt,
+        askedBy: askedBy ?? this.askedBy,
+        voteCount: voteCount ?? this.voteCount,
+        voteCountDown: voteCountDown ?? this.voteCountDown,
+        answers: answers ?? this.answers,
+        isActive: isActive ?? this.isActive,
+        reportedBy: reportedBy ?? this.reportedBy,
+      );
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'category': category,
-      'isOpen': isOpen,
-      'createdAt': createdAt.millisecondsSinceEpoch,
-      'askedBy': askedBy.toJson(),
-      'answers': answers.map((x) => x.toJson()).toList(),
-    };
-  }
+  factory Question.fromJson(Map<String, dynamic> json) => Question(
+        id: json["_id"],
+        title: json["title"],
+        description: json["description"],
+        category: json["category"],
+        subject: json["subject"],
+        isOpen: json["isOpen"],
+        createdAt: DateTime.parse(json["createdAt"]),
+        askedBy: User.fromJson(json["askedBy"]),
+        voteCount: List<dynamic>.from(json["voteCount"].map((x) => x)),
+        voteCountDown: List<dynamic>.from(json["voteCountDown"].map((x) => x)),
+        answers: List<dynamic>.from(json["answers"].map((x) => x)),
+        isActive: json["isActive"],
+        reportedBy: List<dynamic>.from(json["reportedBy"].map((x) => x)),
+      );
 
-  factory Question.fromMap(Map<String, dynamic> map) {
-    return Question(
-      id: map['_id'] ?? '',
-      title: map['title'] ?? '',
-      description: map['description'] ?? '',
-      category: map['category'] ?? '',
-      isOpen: map['isOpen'] ?? false,
-      createdAt: DateTime.parse(map["createdAt"]),
-      askedBy: User.fromJson(map['askedBy']),
-      answers:
-          List<Answer>.from(map['answers']?.map((x) => Answer.fromJson(x))),
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory Question.fromJson(String source) =>
-      Question.fromMap(json.decode(source));
-
-  @override
-  String toString() {
-    return 'Question(id: $id, title: $title, description: $description, category: $category, isOpen: $isOpen, createdAt: $createdAt, askedBy: $askedBy, answers: $answers)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Question &&
-        other.id == id &&
-        other.title == title &&
-        other.description == description &&
-        other.category == category &&
-        other.isOpen == isOpen &&
-        other.createdAt == createdAt &&
-        other.askedBy == askedBy &&
-        listEquals(other.answers, answers);
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^
-        title.hashCode ^
-        description.hashCode ^
-        category.hashCode ^
-        isOpen.hashCode ^
-        createdAt.hashCode ^
-        askedBy.hashCode ^
-        answers.hashCode;
-  }
+  Map<String, dynamic> toJson() => {
+        "_id": id,
+        "title": title,
+        "description": description,
+        "category": category,
+        "subject": subject,
+        "isOpen": isOpen,
+        "createdAt": createdAt.toIso8601String(),
+        "askedBy": askedBy.toJson(),
+        "voteCount": List<dynamic>.from(voteCount.map((x) => x)),
+        "voteCountDown": List<dynamic>.from(voteCountDown.map((x) => x)),
+        "answers": List<dynamic>.from(answers.map((x) => x)),
+        "isActive": isActive,
+        "reportedBy": List<dynamic>.from(reportedBy.map((x) => x)),
+      };
 
   static List<Question> filterQuestions(
       List<Question> allQuestions, String key) {

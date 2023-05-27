@@ -7,6 +7,7 @@ import 'package:e_study_app/src/models/question.model.dart';
 import 'package:provider/provider.dart';
 import 'package:e_study_app/src/providers/question_provider.dart';
 
+import '../../providers/auth_provider.dart';
 import '../../widgets/common_ui.dart';
 import '../question/question_card.dart';
 
@@ -19,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final QuestionProvider _questionProvider;
+
   bool _isLoading = false;
   List<Question> allQuestions = [];
   List<Question> filteredQuestions = [];
@@ -30,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _questionProvider = context.read<QuestionProvider>();
+
     afterBuildCreated(() async {
       await fetchAllQuestions();
       // _timer = Timer.periodic(const Duration(seconds: 60), (timer) async {

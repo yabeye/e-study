@@ -13,8 +13,10 @@ import 'package:text_scroll/text_scroll.dart';
 import '../../api/exceptions.dart';
 import '../../common/asset_locations.dart';
 import '../../common/constants.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/question_provider.dart';
 import '../../theme/theme.dart';
+import '../home/choose_auth.dart';
 
 class QuestionDetail extends StatefulWidget {
   const QuestionDetail({super.key, required this.question});
@@ -26,17 +28,24 @@ class QuestionDetail extends StatefulWidget {
 }
 
 class _QuestionDetailState extends State<QuestionDetail> {
+  late final AuthProvider _authProvider;
   late final QuestionProvider _questionProvider;
   late final TextEditingController _answerController;
   FocusNode _answerFocus = FocusNode(); //create focus node
+  bool _isAuth = false;
+  late Question question;
 
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+
+    _authProvider = context.read<AuthProvider>();
     _questionProvider = context.read<QuestionProvider>();
     _answerController = TextEditingController();
+    _isAuth = _authProvider.isLoggedIn;
+    question = widget.question;
   }
 
   @override
@@ -86,10 +95,29 @@ class _QuestionDetailState extends State<QuestionDetail> {
     setState(() {});
   }
 
+  void _voteQuestion(bool voting) async {
+    try {
+      question = await _questionProvider.voteQuestion(
+        id: question.id,
+        voting: voting,
+      );
+
+      setState(() {});
+    } on BadRequestException catch (e) {
+      toasty(context, e.message);
+    } on UnAuthorizedException catch (e) {
+      toasty(context, e.message);
+    } on SocketException catch (e) {
+      toasty(context, e.message);
+    } catch (e) {
+      toasty(context, "We are unable to do that!");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.question.answers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    final question = widget.question;
+
     final askedBy = question.askedBy;
     return Scaffold(
       appBar: appBar(
@@ -146,7 +174,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
         SliverToBoxAdapter(
           child: question.hashTags.isNotEmpty
               ? TextScroll(
-                  question.hashTags.map((e) => "#" + e).toList().join(" "),
+                  question.hashTags.map((e) => "#$e").toList().join(" "),
                   velocity: const Velocity(pixelsPerSecond: Offset(40, 0)),
                   style: secondaryTextStyle(),
                 )
@@ -189,14 +217,34 @@ class _QuestionDetailState extends State<QuestionDetail> {
               ),
               Row(
                 children: [
-                  svgUpVote.svgImage(size: 32, color: black),
+                  InkWell(
+                      onTap: () async {
+                        _voteQuestion(true);
+                      },
+                      child: (question.voteCount.contains(
+                                  _authProvider.currentUser?.id.toString())
+                              ? svgUpVoteSelected
+                              : svgUpVote)
+                          .svgImage(
+                        size: 32,
+                        color: black,
+                      )),
                   const SizedBox().paddingSymmetric(horizontal: 2),
                   Text(
                     "0",
                     style: secondaryTextStyle(),
                   ),
                   const SizedBox().paddingSymmetric(horizontal: 16),
-                  svgDownVote.svgImage(size: 32, color: black),
+                  GestureDetector(
+                    onTap: () async {
+                      _voteQuestion(false);
+                    },
+                    child: ((question.voteCountDown.contains(
+                                _authProvider.currentUser?.id.toString())
+                            ? svgDownVoteSelected
+                            : svgDownVote)
+                        .svgImage(size: 32, color: black)),
+                  ),
                   const SizedBox().paddingSymmetric(horizontal: 2),
                   Text(
                     "0",
@@ -214,55 +262,74 @@ class _QuestionDetailState extends State<QuestionDetail> {
           child: Divider(),
         ),
         SliverToBoxAdapter(
-          child: 5.height,
-        ),
-        SliverToBoxAdapter(
-          child: TextField(
-            focusNode: _answerFocus,
-            controller: _answerController,
-            // minLines: 4,
-            style: boldTextStyle(
-              weight: FontWeight.normal,
-            ),
-            decoration: inputDecoration(
-              context,
-              hintText: "Add your answer ... ",
-              hintStyle: secondaryTextStyle(),
-            ),
-            maxLines: 3, //or null
-            onSubmitted: (v) {
-              hideKeyboard(context);
-            },
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: 5.height,
-        ),
-        SliverToBoxAdapter(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              AppButton(
-                onTap: _answerQuestion,
-                text: 'Add Answer',
-                textColor: whiteColor,
-                color: primaryColor,
-                width: context.width() * .1,
-              ),
-            ],
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: 5.height,
-        ),
-        SliverToBoxAdapter(
-          child: Text(
-            "Answers (${question.answers.length})",
-            style: primaryTextStyle(),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: 15.height,
+          child: !_isAuth
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      10.height,
+                      Text(
+                        "Please Login to write an answer!",
+                        style: secondaryTextStyle(
+                          size: 18,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      AppButton(
+                        onTap: () {
+                          const ChooseAuth().launch(context, isNewTask: false);
+                        },
+                        text: 'Login',
+                        textColor: white,
+                        color: primaryColor,
+                        width: context.width() * .9,
+                      ),
+                      10.height,
+                      const Divider(),
+                      20.height,
+                    ],
+                  ),
+                )
+              : Column(
+                  children: [
+                    TextField(
+                      focusNode: _answerFocus,
+                      controller: _answerController,
+                      // minLines: 4,
+                      style: boldTextStyle(
+                        weight: FontWeight.normal,
+                      ),
+                      decoration: inputDecoration(
+                        context,
+                        hintText: "Add your answer ... ",
+                        hintStyle: secondaryTextStyle(),
+                      ),
+                      maxLines: 3, //or null
+                      onSubmitted: (v) {
+                        hideKeyboard(context);
+                      },
+                    ),
+                    5.height,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        AppButton(
+                          onTap: _answerQuestion,
+                          text: 'Add Answer',
+                          textColor: whiteColor,
+                          color: primaryColor,
+                          width: context.width() * .1,
+                        ),
+                      ],
+                    ),
+                    5.height,
+                    Text(
+                      "Answers (${question.answers.length})",
+                      style: primaryTextStyle(),
+                    ),
+                    15.height,
+                  ],
+                ),
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(

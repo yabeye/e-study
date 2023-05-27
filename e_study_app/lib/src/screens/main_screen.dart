@@ -4,7 +4,9 @@ import 'package:e_study_app/src/screens/profille/profile_screen.dart';
 import 'package:e_study_app/src/screens/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/auth_provider.dart';
 import '../widgets/app_bottom_nav_bar.dart';
 import '../widgets/common_ui.dart';
 
@@ -16,12 +18,14 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  late final AuthProvider _authProvider;
   int _page = 0;
   late final ValueNotifier<bool> _isDialOpen;
 
   @override
   void initState() {
     _isDialOpen = ValueNotifier<bool>(false);
+    _authProvider = context.read<AuthProvider>();
     super.initState();
   }
 
@@ -41,13 +45,14 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("CHECCK___ ${_authProvider.isLoggedIn}");
     return Scaffold(
       body: _getBody(),
       bottomNavigationBar: AppBottomNavBar(
         page: _page,
         onPageChange: (x) => _onPageChange(x),
       ),
-      floatingActionButton: _page == 3
+      floatingActionButton: _authProvider.token == null || _page == 3
           ? null
           : AppFloatingButton(
               isDialOpen: _isDialOpen,
