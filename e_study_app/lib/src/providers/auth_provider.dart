@@ -96,6 +96,18 @@ class AuthProvider extends ChangeNotifier {
     await login(email: email, password: password);
   }
 
+  Future<void> resetPassword({
+    required String email,
+    required String password,
+  }) async {
+    await _provider.post("auth/reset", {
+      "email": email,
+      "password": password,
+    });
+
+    notifyListeners();
+  }
+
   Future<User?> getUser(String id) async {
     print("START: ");
     final response = await _provider.get("users/$id");

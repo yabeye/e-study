@@ -129,7 +129,7 @@ class QuestionCard extends StatelessWidget {
                           children: [
                             svgUpVote.svgImage(size: 12, color: black),
                             Text(
-                              "0",
+                              question.voteCount.length.toString(),
                               style: secondaryTextStyle(),
                             ),
                           ],
@@ -139,7 +139,7 @@ class QuestionCard extends StatelessWidget {
                           children: [
                             svgDownVote.svgImage(size: 12, color: black),
                             Text(
-                              "0",
+                              question.voteCountDown.length.toString(),
                               style: secondaryTextStyle(),
                             ),
                           ],

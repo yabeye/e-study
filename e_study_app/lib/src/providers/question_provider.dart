@@ -132,7 +132,7 @@ class QuestionProvider extends ChangeNotifier {
     required String category,
     required String name,
   }) async {
-    final String baseUrl = "http://192.168.8.100:5100/api/";
+    final String baseUrl = ApiProvider.baseUrl;
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences pref = await _prefs;
     String? token = (pref.getString('token'));
@@ -157,32 +157,32 @@ class QuestionProvider extends ChangeNotifier {
     }
   }
 
-  // Function for downloading a file
-  Future<void> downloadFile(
-      {String url = "http://192.168.8.100:5100/api/files/download"}) async {
-    final httpClient = http.Client();
-    final request = http.Request('GET', Uri.parse(url));
-    final response = await httpClient.send(request);
+  // // Function for downloading a file
+  // Future<void> downloadFile(
+  //     {Stri}) async {
+  //   final httpClient = http.Client();
+  //   final request = http.Request('GET', Uri.parse(url));
+  //   final response = await httpClient.send(request);
 
-    // Get the app's documents directory to store the downloaded file
-    final appDocumentsDirectory = await getApplicationDocumentsDirectory();
-    final file = File('${appDocumentsDirectory.path}/downloaded_file');
+  //   // Get the app's documents directory to store the downloaded file
+  //   final appDocumentsDirectory = await getApplicationDocumentsDirectory();
+  //   final file = File('${appDocumentsDirectory.path}/downloaded_file');
 
-    // Open a stream to write the file to the app's documents directory
-    final fileStream = file.openWrite();
+  //   // Open a stream to write the file to the app's documents directory
+  //   final fileStream = file.openWrite();
 
-    // Stream the response body into the file stream
-    await response.stream.forEach((chunk) {
-      fileStream.write(chunk);
-    });
+  //   // Stream the response body into the file stream
+  //   await response.stream.forEach((chunk) {
+  //     fileStream.write(chunk);
+  //   });
 
-    // Close the streams to free up resources
-    await fileStream.flush();
-    await fileStream.close();
-    await response.stream.drain();
+  //   // Close the streams to free up resources
+  //   await fileStream.flush();
+  //   await fileStream.close();
+  //   await response.stream.drain();
 
-    print('File downloaded successfully!');
-  }
+  //   print('File downloaded successfully!');
+  // }
 
   Future<Answer> addAnswer({
     required String id,

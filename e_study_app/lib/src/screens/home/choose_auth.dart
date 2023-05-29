@@ -1,6 +1,7 @@
 import 'package:e_study_app/src/common/constants.dart';
 import 'package:e_study_app/src/common/extensions/string_extensions.dart';
 import 'package:e_study_app/src/providers/auth_provider.dart';
+import 'package:e_study_app/src/screens/auth/reset_password.dart';
 import 'package:e_study_app/src/screens/auth/signup_screen.dart';
 import 'package:e_study_app/src/widgets/common_ui.dart';
 import 'package:flutter/material.dart';
@@ -125,8 +126,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   login() async {
-    _emailController.text = "someemail@gmail.com";
-    _passwordController.text = "123456";
+    // _emailController.text = "someemail@gmail.com";
+    // _passwordController.text = "123456";
 
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       toasty(
@@ -166,58 +167,73 @@ class _LoginScreenState extends State<LoginScreen> {
         elevation: 0,
         showBack: true,
       ),
-      body: SizedBox(
-        height: context.height() * 0.9,
-        child: Column(
-          children: [
-            20.height,
-            Text(
-              "Login",
-              style: boldTextStyle(size: 18),
-            ),
-            50.height,
-            TextFormField(
-              autofocus: true,
-              controller: _emailController,
-              style: boldTextStyle(
-                weight: FontWeight.normal,
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: context.height() * 0.9,
+          child: Column(
+            children: [
+              20.height,
+              Text(
+                "Login",
+                style: boldTextStyle(size: 18),
               ),
-              decoration: inputDecoration(
-                context,
-                hintText: "Username",
-                hintStyle: secondaryTextStyle(),
-                prefixIcon: const Icon(Icons.search),
+              50.height,
+              TextFormField(
+                autofocus: true,
+                controller: _emailController,
+                style: boldTextStyle(
+                  weight: FontWeight.normal,
+                ),
+                decoration: inputDecoration(
+                  context,
+                  hintText: "Username",
+                  hintStyle: secondaryTextStyle(),
+                  prefixIcon: const Icon(Icons.search),
+                ),
+                onFieldSubmitted: (v) {
+                  hideKeyboard(context);
+                },
               ),
-              onFieldSubmitted: (v) {
-                hideKeyboard(context);
-              },
-            ),
-            10.height,
-            TextFormField(
-              controller: _passwordController,
-              style: boldTextStyle(
-                weight: FontWeight.normal,
+              10.height,
+              TextFormField(
+                controller: _passwordController,
+                style: boldTextStyle(
+                  weight: FontWeight.normal,
+                ),
+                decoration: inputDecoration(
+                  context,
+                  hintText: "Password",
+                  hintStyle: secondaryTextStyle(),
+                  prefixIcon: const Icon(Icons.search),
+                ),
+                onFieldSubmitted: (v) {
+                  hideKeyboard(context);
+                },
               ),
-              decoration: inputDecoration(
-                context,
-                hintText: "Password",
-                hintStyle: secondaryTextStyle(),
-                prefixIcon: const Icon(Icons.search),
+              20.height,
+              AppButton(
+                onTap: login,
+                text: 'Login',
+                textColor: whiteColor,
+                color: primaryColor,
+                width: context.width() * .9,
               ),
-              onFieldSubmitted: (v) {
-                hideKeyboard(context);
-              },
-            ),
-            20.height,
-            AppButton(
-              onTap: login,
-              text: 'Login',
-              textColor: whiteColor,
-              color: primaryColor,
-              width: context.width() * .9,
-            ),
-          ],
-        ).paddingSymmetric(horizontal: 16),
+              20.height,
+              const Divider(),
+              20.height,
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    const ResetPasswordScreen()
+                        .launch(context, isNewTask: false);
+                  },
+                  child: const Text("forgot password?"),
+                ),
+              )
+            ],
+          ).paddingSymmetric(horizontal: 16),
+        ),
       ),
     );
   }

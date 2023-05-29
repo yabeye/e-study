@@ -1,6 +1,8 @@
+import 'package:e_study_app/src/api/api_provider.dart';
 import 'package:e_study_app/src/providers/question_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +25,7 @@ class FileCard extends StatefulWidget {
 
 class _FileCardState extends State<FileCard> {
   late final QuestionProvider _questionProvider;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -31,12 +34,35 @@ class _FileCardState extends State<FileCard> {
   }
 
   void _downloadFile() async {
-    try {
-      await _questionProvider.downloadFile();
-    } catch (e) {
-      toast(e.toString());
-      print("Error: ${e.toString()}");
-    }
+    FileDownloader.downloadFile(
+        url:
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Npm-logo.svg/1200px-Npm-logo.svg.png",
+        // url: "${ApiProvider.publicUrl}uploads/images/logo.png",
+        onProgress: (name, progress) {
+          _isLoading = true;
+          setState(() {});
+        },
+        onDownloadCompleted: (value) {
+          _isLoading = false;
+          setState(() {});
+          toast("File has been downloaded!");
+          print('path  $value ');
+          // setState(() {
+          //   _progress = null;
+          // });
+        },
+        onDownloadError: (errorMessage) {
+          _isLoading = false;
+          setState(() {});
+          toast(errorMessage);
+        });
+
+    // try {
+    //   await _questionProvider.downloadFile();
+    // } catch (e) {
+    //   toast(e.toString());
+    //   print("Error: ${e.toString()}");
+    // }
   }
 
   @override
@@ -105,9 +131,11 @@ class _FileCardState extends State<FileCard> {
                 style: secondaryTextStyle(),
               ),
               TextButton.icon(
-                onPressed: _downloadFile,
+                onPressed: _isLoading ? null : _downloadFile,
                 icon: const Icon(Icons.download),
-                label: const Text('Download'),
+                label: _isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text('Download'),
               ),
             ],
           ),

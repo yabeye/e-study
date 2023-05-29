@@ -7,13 +7,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'exceptions.dart';
 
 class ApiProvider {
-  final String _baseUrl = "http://192.168.8.100:5100/api/";
+  static String publicUrl = "http://10.42.0.1:5100/";
+  static String baseUrl = "${publicUrl}api/";
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   Future<dynamic> get(String url) async {
     var responseJson;
     try {
-      final completeUri = Uri.parse(_baseUrl + url);
+      final completeUri = Uri.parse(baseUrl + url);
       final response = await http.get(completeUri);
 
       responseJson = _response(response);
@@ -33,7 +34,7 @@ class ApiProvider {
       String? token = (pref.getString('token'));
       // print("Token sis $token");
 
-      final completeUri = Uri.parse(_baseUrl + url);
+      final completeUri = Uri.parse(baseUrl + url);
       final response =
           await http.post(completeUri, body: jsonEncode(body), headers: {
         'Content-Type': 'application/json',
@@ -52,7 +53,7 @@ class ApiProvider {
       final SharedPreferences pref = await _prefs;
       String? token = (pref.getString('token'));
 
-      final completeUri = Uri.parse(_baseUrl + url);
+      final completeUri = Uri.parse(baseUrl + url);
 
       final response =
           await http.patch(completeUri, body: jsonEncode(body), headers: {
