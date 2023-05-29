@@ -193,6 +193,23 @@ class _QuestionDetailState extends State<QuestionDetail> {
           child: 15.height,
         ),
         SliverToBoxAdapter(
+          child: askedBy.id != _authProvider.currentUser!.id
+              ? null
+              : Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      toast("Editngg...");
+                    },
+                    icon: const Icon(Icons.edit),
+                    label: const Text("Edit Question"),
+                  ),
+                ),
+        ),
+        SliverToBoxAdapter(
+          child: 15.height,
+        ),
+        SliverToBoxAdapter(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

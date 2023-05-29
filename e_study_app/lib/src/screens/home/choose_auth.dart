@@ -154,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } on SocketException catch (e) {
       toasty(context, e.message);
     } catch (e) {
-      toasty(context, "We are unable to do that!");
+      toasty(context, e.toString());
     }
   }
 

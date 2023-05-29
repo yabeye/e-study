@@ -55,17 +55,14 @@ class AuthProvider extends ChangeNotifier {
     passwordStore = password;
 
     notifyListeners();
-
+    print("Before: }");
     final response = await _provider.post("auth/login", {
       "email": email,
       "password": password,
     });
-
-    token = "${response['data']['accessToken']}";
-    print("SIGNUP TOKEN IS: ${token}");
-    final userRes = response['data']['user'];
-    print("User REs: ${userRes}");
-    currentUser = User.fromJson(userRes);
+    token = response['data']['accessToken'];
+    print("User REs: ${response['data']['user']}");
+    currentUser = User.fromJson(response['data']['user']);
     print("DONE!!!!");
 
     // print("Toke is $token");

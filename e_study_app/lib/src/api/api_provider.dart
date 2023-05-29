@@ -33,16 +33,14 @@ class ApiProvider {
     try {
       final SharedPreferences pref = await _prefs;
       String? token = (pref.getString('token'));
-      print("Token sis $token");
+      // print("Token sis $token");
 
       final completeUri = Uri.parse(_baseUrl + url);
-      print("HOST ${completeUri.data}");
       final response =
           await http.post(completeUri, body: jsonEncode(body), headers: {
         'Content-Type': 'application/json',
-        'authorization': "Bearer ${token!}",
+        'authorization': "Bearer ${token ?? ""}",
       });
-      print("REsponse: ${response.body}");
       responseJson = _response(response);
     } on SocketException {
       throw FetchDataException('No Internet connection');
