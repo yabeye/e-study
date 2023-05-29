@@ -13,28 +13,28 @@ const getAllUsers = asyncErrorHandler(async (req, res, next) => {
 });
 
 const getUserById = asyncErrorHandler(async (req, res, next) => {
-  const user = await User.findById({ _id: req.params.id })
-    .populate({
-      path: 'question',
-      model: 'Question',
-      match: { isActive: true },
-      select: '-reportedBy -reportedBy -__v',
-      populate: {
-        path: 'answers',
-        model: 'Answer',
-        select: '-reportedBy -reportedBy -__v',
-        match: { isActive: true },
-      },
-    })
-    .populate({
-      path: 'answer',
-      model: 'Answer',
-      match: { isActive: true },
-    })
-    .populate({
-      path: 'bookmarks',
-      model: 'Question',
-    });
+  const user = await User.findById({ _id: req.params.id });
+  // .populate({
+  //   path: 'question',
+  //   model: 'Question',
+  //   match: { isActive: true },
+  //   select: '-reportedBy -reportedBy -__v',
+  //   populate: {
+  //     path: 'answers',
+  //     model: 'Answer',
+  //     select: '-reportedBy -reportedBy -__v',
+  //     match: { isActive: true },
+  //   },
+  // })
+  // .populate({
+  //   path: 'answer',
+  //   model: 'Answer',
+  //   match: { isActive: true },
+  // })
+  // .populate({
+  //   path: 'bookmarks',
+  //   model: 'Question',
+  // });
   return res.status(200).json({
     success: true,
     message: 'User found',

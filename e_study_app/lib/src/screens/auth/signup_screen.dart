@@ -27,6 +27,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
   @override
   void initState() {
@@ -34,7 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _authProvider = context.read<AuthProvider>();
   }
 
-  sinUp() async {
+  signUp() async {
     // if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
     //   toasty(
     //     context,
@@ -51,6 +52,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         username: _usernameController.text,
         email: _emailController.text,
         password: _passwordController.text,
+        phone: _phoneController.text,
       );
 
       // ignore: use_build_context_synchronously
@@ -88,13 +90,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
             20.height,
             TextFormField(
               autofocus: true,
-              controller: _emailController,
+              controller: _firstNameController,
               style: boldTextStyle(
                 weight: FontWeight.normal,
               ),
               decoration: inputDecoration(
                 context,
-                hintText: "Firstname",
+                labelText: "Firstname",
                 hintStyle: secondaryTextStyle(),
                 prefixIcon: const Icon(Icons.search),
               ),
@@ -111,7 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               decoration: inputDecoration(
                 context,
-                hintText: "LastName",
+                labelText: "LastName",
                 hintStyle: secondaryTextStyle(),
                 prefixIcon: const Icon(Icons.search),
               ),
@@ -128,8 +130,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               decoration: inputDecoration(
                 context,
-                hintText: "Email",
-                hintStyle: secondaryTextStyle(),
+                labelText: "Email",
                 prefixIcon: const Icon(Icons.search),
               ),
               onFieldSubmitted: (v) {
@@ -145,7 +146,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               decoration: inputDecoration(
                 context,
-                hintText: "Username",
+                labelText: "Username",
                 hintStyle: secondaryTextStyle(),
                 prefixIcon: const Icon(Icons.search),
               ),
@@ -162,7 +163,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               decoration: inputDecoration(
                 context,
-                hintText: "Password",
+                labelText: "Password",
+                hintStyle: secondaryTextStyle(),
+                prefixIcon: const Icon(Icons.search),
+              ),
+              onFieldSubmitted: (v) {
+                hideKeyboard(context);
+              },
+            ),
+            20.height,
+            TextFormField(
+              keyboardType: TextInputType.number,
+              autofocus: true,
+              controller: _phoneController,
+              style: boldTextStyle(
+                weight: FontWeight.normal,
+              ),
+              maxLength: 13,
+              decoration: inputDecoration(
+                context,
+                labelText: "Phone Number",
                 hintStyle: secondaryTextStyle(),
                 prefixIcon: const Icon(Icons.search),
               ),
@@ -172,7 +192,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             20.height,
             AppButton(
-              onTap: sinUp,
+              onTap: signUp,
               text: 'Signup',
               textColor: whiteColor,
               color: primaryColor,

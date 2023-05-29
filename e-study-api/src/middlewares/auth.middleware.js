@@ -26,7 +26,7 @@ const checkAccessToRoute = async (req, res, next) => {
     if (err) {
       return next(unAuthorizedError);
     }
-
+    console.log('DEcoded id is ', decoded.id);
     req.user = await User.findById(decoded.id);
     if (!req.user) {
       return next(new CustomError('User not found', 400));

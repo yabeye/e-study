@@ -4,12 +4,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'exceptions.dart';
 
 class ApiProvider {
   final String _baseUrl = "http://192.168.8.100:5100/api/";
-  final storage = const FlutterSecureStorage();
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   Future<dynamic> get(String url) async {
     var responseJson;
@@ -24,10 +25,14 @@ class ApiProvider {
     return responseJson;
   }
 
-  Future<dynamic> post(String url, Object? body) async {
+  Future<dynamic> post(
+    String url,
+    Object? body,
+  ) async {
     var responseJson;
     try {
-      String? token = await storage.read(key: "token");
+      final SharedPreferences pref = await _prefs;
+      String? token = (pref.getString('token'));
       print("Token sis $token");
 
       final completeUri = Uri.parse(_baseUrl + url);
@@ -48,8 +53,8 @@ class ApiProvider {
   Future<dynamic> patch(String url, Object? body) async {
     var responseJson;
     try {
-      String? token = await storage.read(key: "token");
-      print("Token sis $token");
+      final SharedPreferences pref = await _prefs;
+      String? token = (pref.getString('token'));
 
       final completeUri = Uri.parse(_baseUrl + url);
       print("HOST ${completeUri.data}");
@@ -80,7 +85,6 @@ class ApiProvider {
 
         throw BadRequestException(responseJson['error']['message'].toString());
       case 401:
-
       case 403:
         throw UnAuthorizedException(response.body.toString());
       case 500:

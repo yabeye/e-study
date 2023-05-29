@@ -96,7 +96,8 @@ const addQuestion = asyncErrorHandler(async (req, res, next) => {
 });
 
 const updateQuestion = asyncErrorHandler(async (req, res, next) => {
-  const { title, description, category, subject, isOpen } = req.body;
+  const { title, description, category, subject, isOpen, reportedBy } =
+    req.body;
 
   console.log('req.question', req.question);
 
@@ -108,7 +109,12 @@ const updateQuestion = asyncErrorHandler(async (req, res, next) => {
     subject: subject ?? req.question.subject,
     voteCount: [],
     voteCountDown: [],
+    reportedBy: req.question.reportedBy ?? [],
   };
+
+  if (reportedBy !== null) {
+    question.reportedBy.push(reportedBy);
+  }
 
   if (req.body.voting == true) {
     let index = req.question.voteCount.indexOf(req.user.id);

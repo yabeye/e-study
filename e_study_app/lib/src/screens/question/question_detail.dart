@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:e_study_app/src/common/extensions/string_extensions.dart';
+import 'package:e_study_app/src/models/answer.model.dart';
 import 'package:e_study_app/src/models/question.model.dart';
 import 'package:e_study_app/src/screens/question/answer_card.dart';
 import 'package:e_study_app/src/widgets/common_ui.dart';
@@ -141,10 +142,18 @@ class _QuestionDetailState extends State<QuestionDetail> {
                 ),
               ],
             ),
-            const Icon(
-              Icons.more_vert,
-              color: whiteColor,
-            ),
+            TextButton.icon(
+              onPressed: _showReport,
+              icon: const Icon(
+                Icons.report,
+                color: whiteColor,
+                size: 22,
+              ),
+              label: const Text(
+                "Report",
+                style: TextStyle(color: whiteColor, fontSize: 12),
+              ),
+            )
           ],
         ),
         showBack: true,
@@ -231,7 +240,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
                       )),
                   const SizedBox().paddingSymmetric(horizontal: 2),
                   Text(
-                    "0",
+                    "${question.voteCount.length}",
                     style: secondaryTextStyle(),
                   ),
                   const SizedBox().paddingSymmetric(horizontal: 16),
@@ -247,7 +256,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
                   ),
                   const SizedBox().paddingSymmetric(horizontal: 2),
                   Text(
-                    "0",
+                    question.voteCountDown.length.toString(),
                     style: secondaryTextStyle(),
                   ),
                 ],
@@ -334,14 +343,99 @@ class _QuestionDetailState extends State<QuestionDetail> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (_, index) => AnswerCard(
-              answer: question.answers[index],
-              askedBy: askedBy,
+              answer: question.answers[index] as Answer,
             ),
             childCount: question.answers.length,
             // childCount: _availableHandyMen.length,
           ),
         ),
       ]).paddingSymmetric(horizontal: 12),
+    );
+  }
+
+  _showReport() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          // height: 200,
+          child: Column(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.school),
+                title: const Text("Non Educational"),
+                onTap: () async {
+                  try {
+                    await _questionProvider.reportQuestion(
+                      id: question.id,
+                      byId: _authProvider.currentUser!.id!,
+                      report: "Non Educational",
+                    );
+                  } catch (e) {
+                    toast("Unabe to report!");
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.swap_calls),
+                title: const Text("Spam"),
+                onTap: () async {
+                  try {
+                    await _questionProvider.reportQuestion(
+                      id: question.id,
+                      byId: _authProvider.currentUser!.id!,
+                      report: "Spam",
+                    );
+                  } catch (e) {
+                    toast("Unabe to report!");
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.sports_martial_arts),
+                title: const Text("Violence"),
+                onTap: () async {
+                  try {
+                    await _questionProvider.reportQuestion(
+                      id: question.id,
+                      byId: _authProvider.currentUser!.id!,
+                      report: "Violence",
+                    );
+                  } catch (e) {
+                    toast("Unabe to report!");
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.add_box_sharp),
+                title: const Text("Adult Content"),
+                onTap: () async {
+                  try {
+                    await _questionProvider.reportQuestion(
+                      id: question.id,
+                      byId: _authProvider.currentUser!.id!,
+                      report: "Adult Content",
+                    );
+                  } catch (e) {
+                    toast("Unabe to report!");
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.open_with_rounded),
+                title: const Text("Others"),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

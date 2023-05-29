@@ -2,6 +2,7 @@
 //
 //     final question = questionFromJson(jsonString);
 
+import 'package:e_study_app/src/models/answer.model.dart';
 import 'package:e_study_app/src/models/user.model.dart';
 import 'package:meta/meta.dart';
 import 'dart:convert';
@@ -21,7 +22,7 @@ class Question {
   final User askedBy;
   final List<dynamic> voteCount;
   final List<dynamic> voteCountDown;
-  final List<dynamic> answers;
+  final List<Answer> answers;
   final bool isActive;
   final List<dynamic> reportedBy;
   final List<String> hashTags;
@@ -54,7 +55,7 @@ class Question {
     User? askedBy,
     List<dynamic>? voteCount,
     List<dynamic>? voteCountDown,
-    List<dynamic>? answers,
+    List<Answer>? answers,
     bool? isActive,
     List<dynamic>? reportedBy,
   }) =>
@@ -85,7 +86,8 @@ class Question {
         askedBy: User.fromJson(json["askedBy"]),
         voteCount: List<dynamic>.from(json["voteCount"].map((x) => x)),
         voteCountDown: List<dynamic>.from(json["voteCountDown"].map((x) => x)),
-        answers: List<dynamic>.from(json["answers"].map((x) => x)),
+        answers:
+            List<Answer>.from(json["answers"].map((x) => Answer.fromJson(x))),
         isActive: json["isActive"],
         reportedBy: List<dynamic>.from(json["reportedBy"].map((x) => x)),
       );

@@ -138,6 +138,25 @@ class QuestionProvider extends ChangeNotifier {
     return Question.fromJson(resQuestions);
   }
 
+  Future<Question> reportQuestion({
+    required String id,
+    required String byId,
+    required String report,
+  }) async {
+    final response = await _provider.patch("questions/$id", {
+      "reportedBy": {
+        "by": byId,
+        "report": report,
+      },
+    });
+
+    final resQuestions = response['data']['question'];
+
+    await getQuestions();
+
+    return Question.fromJson(resQuestions);
+  }
+
   void clear() {
     questions = [];
     notifyListeners();

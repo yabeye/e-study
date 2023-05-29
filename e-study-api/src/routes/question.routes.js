@@ -30,7 +30,11 @@ router.post('/ask', [validateNewQuestionBody], addQuestion);
 //TODO: File upload using multer for pdf, docs, ppts,  images etc ...
 router.patch(
   '/:id',
-  [getQuestionOwnerAccess, checkQuestionExist, checkQuestionData],
+  [
+    // getQuestionOwnerAccess,
+    checkQuestionExist,
+    checkQuestionData,
+  ],
   updateQuestion
 );
 

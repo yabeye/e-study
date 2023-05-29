@@ -9,6 +9,7 @@ import Answer from '../models/answer.model.js';
 const validateRegisterBody = async (req, res, next) => {
   const { error } = User.validateRegistrationBody(req.body);
   if (error) return next(new CustomError(error.details[0].message, 400));
+  console.log('joi error is', error);
   const user = await User.findOne({ email: req.body.email });
   if (user)
     return next(new CustomError('user with this email already exist', 400));

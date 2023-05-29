@@ -40,7 +40,7 @@ const QuestionSchema = new mongoose.Schema({
         },
         report: {
           type: String,
-          enum: ALL_REPORTS,
+          // enum: ALL_REPORTS,
         },
       },
     },

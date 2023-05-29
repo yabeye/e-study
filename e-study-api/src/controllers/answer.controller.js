@@ -33,6 +33,8 @@ const addNewAnswerToQuestion = asyncErrorHandler(async (req, res, next) => {
     return next(new CustomError('Complete Answer is required', 400));
   }
 
+  console.log('Current logged in user is', req.user);
+
   const answer = await Answer.create({
     ...params,
     answeredBy: req.user.id,

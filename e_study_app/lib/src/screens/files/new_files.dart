@@ -50,96 +50,98 @@ class _NewFileScreenState extends State<NewFileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(title: "Upload File", showBack: true),
-      body: Column(
-        children: [
-          20.height,
-          Text(
-            "Upload a new File",
-            style: boldTextStyle(),
-          ),
-          10.height,
-          Text(
-            "Please make sure that files are less than 50MB\nFormats(.pdf, .doc, .xsl, .ppts, and images)",
-            style: secondaryTextStyle(),
-            textAlign: TextAlign.center,
-          ),
-          30.height,
-          CommonDropDownComponent(
-            items: categories.skip(1).toList(),
-            defaultValue: "Natural",
-            placeholder: "Select Category",
-            callback: (v) {
-              toast(v);
-            },
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "Select Category",
-              style: secondaryTextStyle(color: redColor),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            20.height,
+            Text(
+              "Upload a new File",
+              style: boldTextStyle(),
             ),
-          ).visible(_isCategoryError),
-          10.height,
-          TextField(
-            // autofocus: true,
-            controller: _nameController,
-            style: boldTextStyle(
-              weight: FontWeight.normal,
-              color: whiteColor,
+            10.height,
+            Text(
+              "Please make sure that files are less than 50MB\nFormats(.pdf, .doc, .xsl, .ppts, and images)",
+              style: secondaryTextStyle(),
+              textAlign: TextAlign.center,
             ),
-            decoration: inputDecoration(
-              context,
-              hintText: "File name (Optional)",
-              hintStyle: secondaryTextStyle(),
+            30.height,
+            CommonDropDownComponent(
+              items: categories.skip(1).toList(),
+              defaultValue: "Natural",
+              placeholder: "Select Category",
+              callback: (v) {
+                toast(v);
+              },
             ),
-            maxLines: 3,
-            onSubmitted: (v) {
-              hideKeyboard(context);
-            },
-          ),
-          20.height,
-          Container(
-            decoration: BoxDecoration(
-              color: secondaryColor,
-              border: Border.all(
-                color: primaryColor,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Select Category",
+                style: secondaryTextStyle(color: redColor),
               ),
-            ),
-            child: AppButton(
-              onTap: _openFileExplorer,
-              text: "Select File",
-              textColor: primaryColor,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.file_present_outlined,
-                    color: gray,
-                  ),
-                  Text(
-                    "Select File",
-                    style: secondaryTextStyle(),
-                  )
-                ],
+            ).visible(_isCategoryError),
+            10.height,
+            TextField(
+              // autofocus: true,
+              controller: _nameController,
+              style: boldTextStyle(
+                weight: FontWeight.normal,
+                color: blackColor,
               ),
-            ),
-          ),
-          50.height,
-          AppButton(
-            onTap: () {
-              toasty(
+              decoration: inputDecoration(
                 context,
-                "File has been uploaded!, it will be live once it has been reviewed! ",
-                length: Toast.LENGTH_LONG,
-              );
-            },
-            text: "Upload",
-            textColor: whiteColor,
-            color: primaryColor,
-            width: context.width(),
-          ),
-        ],
-      ).paddingSymmetric(horizontal: 12),
+                hintText: "File name (Optional)",
+                hintStyle: secondaryTextStyle(),
+              ),
+              maxLines: 3,
+              onSubmitted: (v) {
+                hideKeyboard(context);
+              },
+            ),
+            20.height,
+            Container(
+              decoration: BoxDecoration(
+                color: secondaryColor,
+                border: Border.all(
+                  color: primaryColor,
+                ),
+              ),
+              child: AppButton(
+                onTap: _openFileExplorer,
+                text: "Select File",
+                textColor: primaryColor,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.file_present_outlined,
+                      color: gray,
+                    ),
+                    Text(
+                      "Select File",
+                      style: secondaryTextStyle(),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            50.height,
+            AppButton(
+              onTap: () {
+                toasty(
+                  context,
+                  "File has been uploaded!, it will be live once it has been reviewed! ",
+                  length: Toast.LENGTH_LONG,
+                );
+              },
+              text: "Upload",
+              textColor: whiteColor,
+              color: primaryColor,
+              width: context.width(),
+            ),
+          ],
+        ).paddingSymmetric(horizontal: 12),
+      ),
     );
   }
 }

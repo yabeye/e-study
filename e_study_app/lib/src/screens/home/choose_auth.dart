@@ -127,6 +127,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   login() async {
+    _emailController.text = "someemail@gmail.com";
+    _passwordController.text = "123456";
+
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       toasty(
         context,

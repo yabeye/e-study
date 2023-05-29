@@ -122,7 +122,7 @@ User.validateRegistrationBody = (body) => {
     firstName: Joi.string().max(64).required(),
     lastName: Joi.string().max(64).required(),
     email: Joi.string().email().max(64).required(),
-    phone: Joi.string().min(9).max(14).optional(),
+    phone: Joi.string().min(9).max(14).required(),
     username: Joi.string().max(64).required(),
     password: Joi.string().min(6).max(64).required(),
   });

@@ -38,6 +38,7 @@ class AuthProvider extends ChangeNotifier {
     final map = jsonDecode(json);
 
     currentUser = User.fromJson(map);
+    print("Current user is ${currentUser!.firstName}");
 
     notifyListeners();
   }
@@ -60,7 +61,8 @@ class AuthProvider extends ChangeNotifier {
       "password": password,
     });
 
-    token = "Bearer ${response['data']['accessToken']}";
+    token = "${response['data']['accessToken']}";
+    print("SIGNUP TOKEN IS: ${token}");
     final userRes = response['data']['user'];
     print("User REs: ${userRes}");
     currentUser = User.fromJson(userRes);
@@ -81,6 +83,7 @@ class AuthProvider extends ChangeNotifier {
     required String email,
     required String username,
     required String password,
+    required String phone,
   }) async {
     final response = await _provider.post("auth/register", {
       "firstName": firstName,
@@ -88,10 +91,21 @@ class AuthProvider extends ChangeNotifier {
       "email": email,
       "username": username,
       "password": password,
+      "phone": phone,
     });
 
     notifyListeners();
     await login(email: email, password: password);
+  }
+
+  Future<User?> getUser(String id) async {
+    print("START: ");
+    final response = await _provider.get("users/$id");
+    final resQuestions = response['data']['user'];
+    print("REq Questioon: ${resQuestions}");
+    if (resQuestions == null) return null;
+
+    return User.fromJson(resQuestions);
   }
 
   clear() async {
