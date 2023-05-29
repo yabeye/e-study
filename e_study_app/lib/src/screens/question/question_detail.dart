@@ -375,7 +375,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
         byId: _authProvider.currentUser!.id!,
         report: report,
       );
-      toast("Question Reported! ");
+      toasty(context, "Question Reported! ");
     } catch (e) {
       toast("Unable to report!");
     }
