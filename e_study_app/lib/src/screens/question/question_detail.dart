@@ -368,6 +368,20 @@ class _QuestionDetailState extends State<QuestionDetail> {
     );
   }
 
+  reported(String report) async {
+    try {
+      await _questionProvider.reportQuestion(
+        id: question.id,
+        byId: _authProvider.currentUser!.id!,
+        report: report,
+      );
+      toast("Question Reported! ");
+    } catch (e) {
+      toast("Unable to report!");
+    }
+    Navigator.pop(context);
+  }
+
   _showReport() async {
     showModalBottomSheet(
       context: context,
@@ -380,71 +394,35 @@ class _QuestionDetailState extends State<QuestionDetail> {
                 leading: const Icon(Icons.school),
                 title: const Text("Non Educational"),
                 onTap: () async {
-                  try {
-                    await _questionProvider.reportQuestion(
-                      id: question.id,
-                      byId: _authProvider.currentUser!.id!,
-                      report: "Non Educational",
-                    );
-                  } catch (e) {
-                    toast("Unabe to report!");
-                  }
-                  Navigator.pop(context);
+                  await reported("Non Educational");
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.swap_calls),
                 title: const Text("Spam"),
                 onTap: () async {
-                  try {
-                    await _questionProvider.reportQuestion(
-                      id: question.id,
-                      byId: _authProvider.currentUser!.id!,
-                      report: "Spam",
-                    );
-                  } catch (e) {
-                    toast("Unabe to report!");
-                  }
-                  Navigator.pop(context);
+                  await reported("Spam");
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.sports_martial_arts),
                 title: const Text("Violence"),
                 onTap: () async {
-                  try {
-                    await _questionProvider.reportQuestion(
-                      id: question.id,
-                      byId: _authProvider.currentUser!.id!,
-                      report: "Violence",
-                    );
-                  } catch (e) {
-                    toast("Unabe to report!");
-                  }
-                  Navigator.pop(context);
+                  await reported("Violence");
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.add_box_sharp),
                 title: const Text("Adult Content"),
                 onTap: () async {
-                  try {
-                    await _questionProvider.reportQuestion(
-                      id: question.id,
-                      byId: _authProvider.currentUser!.id!,
-                      report: "Adult Content",
-                    );
-                  } catch (e) {
-                    toast("Unabe to report!");
-                  }
-                  Navigator.pop(context);
+                  await reported("Adult Content");
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.open_with_rounded),
                 title: const Text("Others"),
-                onTap: () {
-                  Navigator.pop(context);
+                onTap: () async {
+                  await reported("Others");
                 },
               ),
             ],
