@@ -6,7 +6,7 @@ import 'package:e_study_app/src/models/answer.model.dart';
 import 'package:e_study_app/src/models/question.model.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/files.dart';
+import '../../models/file_model.dart';
 import '../../models/user.model.dart';
 import '../../providers/question_provider.dart';
 import '../../theme/theme.dart';

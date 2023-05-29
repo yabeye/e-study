@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:e_study_app/src/common/extensions/string_extensions.dart';
 import 'package:e_study_app/src/models/answer.model.dart';
 import 'package:e_study_app/src/models/question.model.dart';
@@ -85,7 +83,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
       toasty(context, e.message);
-    } on SocketException catch (e) {
+    } on FetchDataException catch (e) {
       toasty(context, e.message);
     } catch (e) {
       print(e.toString());
@@ -108,7 +106,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
       toasty(context, e.message);
-    } on SocketException catch (e) {
+    } on FetchDataException catch (e) {
       toasty(context, e.message);
     } catch (e) {
       toasty(context, "We are unable to do that!");

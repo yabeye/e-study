@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:e_study_app/src/api/exceptions.dart';
 import 'package:e_study_app/src/common/constants.dart';
 import 'package:e_study_app/src/providers/question_provider.dart';
@@ -61,7 +59,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
       toasty(context, e.message);
-    } on SocketException catch (e) {
+    } on FetchDataException catch (e) {
       toasty(context, e.message);
     } catch (e) {
       toasty(context, "We are unable to do that!");

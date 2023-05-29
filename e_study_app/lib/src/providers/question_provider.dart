@@ -1,102 +1,115 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:e_study_app/src/models/answer.model.dart';
-import 'package:e_study_app/src/models/files.dart';
+import 'package:e_study_app/src/models/file_model.dart';
 import 'package:e_study_app/src/models/question.model.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 import '../api/api_provider.dart';
 import '../common/constants.dart';
 import '../models/user.model.dart';
 
+import 'package:http/http.dart' as http;
+
 class QuestionProvider extends ChangeNotifier {
   final _provider = ApiProvider();
   List<Question> questions = [];
   List<FileModel> files = [
-    FileModel(
-      name: "2012 Biology Model Exam for Bethelehem Secondary School",
-      size: "22MB",
-      category: categories[1],
-      uploadedBy: User(
-        id: "id",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email",
-        phone: "phone",
-        username: "liya",
-        roles: "roles",
-        question: [],
-        answer: [],
-        bookmarks: [],
-      ),
-      createdAt: DateTime.now(),
-    ),
-    FileModel(
-      name: "Math Note on Trigonometry",
-      size: "12MB",
-      category: categories[3],
-      uploadedBy: User(
-        id: "id",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email",
-        phone: "phone",
-        username: "dimond",
-        roles: "roles",
-        question: [],
-        answer: [],
-        bookmarks: [],
-      ),
-      createdAt: DateTime.now(),
-    ),
-    FileModel(
-      name: "2010 Mathematics Model Exam for Bethelehem Secondary School",
-      size: "55MB",
-      category: categories[3],
-      uploadedBy: User(
-        id: "id",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email",
-        phone: "phone",
-        username: "yeabsera",
-        roles: "roles",
-        question: [],
-        answer: [],
-        bookmarks: [],
-      ),
-      createdAt: DateTime.now(),
-    ),
-    FileModel(
-      name: "2014 Grade 12 National Civics Exam Preparation test",
-      size: "5MB",
-      category: categories[2],
-      uploadedBy: User(
-        id: "id",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email",
-        phone: "phone",
-        username: "abel",
-        roles: "roles",
-        question: [],
-        answer: [],
-        bookmarks: [],
-      ),
-      createdAt: DateTime.now(),
-    ),
+    // FileModel(
+    //   name: "2012 Biology Model Exam for Bethelehem Secondary School",
+    //   size: "22MB",
+    //   category: categories[1],
+    //   uploadedBy: User(
+    //     id: "id",
+    //     firstName: "firstName",
+    //     lastName: "lastName",
+    //     email: "email",
+    //     phone: "phone",
+    //     username: "liya",
+    //     roles: "roles",
+    //     question: [],
+    //     answer: [],
+    //     bookmarks: [],
+    //   ),
+    //   createdAt: DateTime.now(),
+    // ),
+    // FileModel(
+    //   name: "Math Note on Trigonometry",
+    //   size: "12MB",
+    //   category: categories[3],
+    //   uploadedBy: User(
+    //     id: "id",
+    //     firstName: "firstName",
+    //     lastName: "lastName",
+    //     email: "email",
+    //     phone: "phone",
+    //     username: "dimond",
+    //     roles: "roles",
+    //     question: [],
+    //     answer: [],
+    //     bookmarks: [],
+    //   ),
+    //   createdAt: DateTime.now(),
+    // ),
+    // FileModel(
+    //   name: "2010 Mathematics Model Exam for Bethelehem Secondary School",
+    //   size: "55MB",
+    //   category: categories[3],
+    //   uploadedBy: User(
+    //     id: "id",
+    //     firstName: "firstName",
+    //     lastName: "lastName",
+    //     email: "email",
+    //     phone: "phone",
+    //     username: "yeabsera",
+    //     roles: "roles",
+    //     question: [],
+    //     answer: [],
+    //     bookmarks: [],
+    //   ),
+    //   createdAt: DateTime.now(),
+    // ),
+    // FileModel(
+    //   name: "2014 Grade 12 National Civics Exam Preparation test",
+    //   size: "5MB",
+    //   category: categories[2],
+    //   uploadedBy: User(
+    //     id: "id",
+    //     firstName: "firstName",
+    //     lastName: "lastName",
+    //     email: "email",
+    //     phone: "phone",
+    //     username: "abel",
+    //     roles: "roles",
+    //     question: [],
+    //     answer: [],
+    //     bookmarks: [],
+    //   ),
+    //   createdAt: DateTime.now(),
+    // ),
   ];
 
   Future<void> getQuestions() async {
-    final response = await _provider.get("questions/all");
-    final resQuestions = response['data']['questions'];
+    var response = await _provider.get("questions/all");
+    var resQuestions = response['data']['questions'];
     clear();
     for (int i = 0; i < resQuestions.length; i++) {
       questions.add(Question.fromJson(resQuestions[i]));
     }
+
+    response = await _provider.get("files/all");
+    resQuestions = response['data']['files'];
+
+    for (int i = 0; i < resQuestions.length; i++) {
+      files.add(FileModel.fromJson(resQuestions[i]));
+    }
+    files.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     notifyListeners();
   }
 
@@ -112,6 +125,63 @@ class QuestionProvider extends ChangeNotifier {
       "category": category,
       "subject": subject,
     });
+  }
+
+  Future<void> uploadFile({
+    required PlatformFile file,
+    required String category,
+    required String name,
+  }) async {
+    final String baseUrl = "http://192.168.8.100:5100/api/";
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences pref = await _prefs;
+    String? token = (pref.getString('token'));
+    String url = '$baseUrl/files/upload';
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    request.files
+        .add(await http.MultipartFile.fromPath('file', file.path ?? ""));
+    request.headers.addAll({'Authorization': 'Bearer ${token ?? ""}'});
+
+    request.fields['category'] = category;
+    request.fields['name'] = name;
+
+    try {
+      http.StreamedResponse response = await request.send();
+      if (response.statusCode == 200) {
+        print('File uploaded successfully!');
+      } else {
+        print('Error uploading file: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Error uploading file: $e');
+    }
+  }
+
+  // Function for downloading a file
+  Future<void> downloadFile(
+      {String url = "http://192.168.8.100:5100/api/files/download"}) async {
+    final httpClient = http.Client();
+    final request = http.Request('GET', Uri.parse(url));
+    final response = await httpClient.send(request);
+
+    // Get the app's documents directory to store the downloaded file
+    final appDocumentsDirectory = await getApplicationDocumentsDirectory();
+    final file = File('${appDocumentsDirectory.path}/downloaded_file');
+
+    // Open a stream to write the file to the app's documents directory
+    final fileStream = file.openWrite();
+
+    // Stream the response body into the file stream
+    await response.stream.forEach((chunk) {
+      fileStream.write(chunk);
+    });
+
+    // Close the streams to free up resources
+    await fileStream.flush();
+    await fileStream.close();
+    await response.stream.drain();
+
+    print('File downloaded successfully!');
   }
 
   Future<Answer> addAnswer({
@@ -159,6 +229,7 @@ class QuestionProvider extends ChangeNotifier {
 
   void clear() {
     questions = [];
+    files = [];
     notifyListeners();
   }
 }

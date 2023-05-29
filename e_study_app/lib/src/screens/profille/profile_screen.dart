@@ -2,6 +2,7 @@ import 'package:e_study_app/src/common/extensions/string_extensions.dart';
 import 'package:e_study_app/src/models/question.model.dart';
 import 'package:e_study_app/src/models/user.model.dart';
 import 'package:e_study_app/src/providers/auth_provider.dart';
+import 'package:e_study_app/src/screens/profille/edit_profile_screen.dart';
 import 'package:e_study_app/src/screens/splash_screeen.dart';
 import 'package:e_study_app/src/widgets/common_ui.dart';
 import 'package:flutter/material.dart';
@@ -129,16 +130,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                SliverToBoxAdapter(
-                  child: Text(
-                    "Bio: Grade 10 Student from Addis Ababa",
-                    style: secondaryTextStyle(),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+                // SliverToBoxAdapter(
+                //   child: Text(
+                //     "Bio: Grade 10 Student from Addis Ababa",
+                //     style: secondaryTextStyle(),
+                //     textAlign: TextAlign.center,
+                //   ),
+                // ),
                 SliverToBoxAdapter(
                   child: TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      const EditProfileScreen().launch(
+                        context,
+                        isNewTask: false,
+                      );
+                    },
                     icon: const Icon(Icons.edit),
                     label: const Text("Edit Profile"),
                   ),

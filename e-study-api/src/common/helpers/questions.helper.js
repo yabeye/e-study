@@ -14,6 +14,16 @@ const checkQuestionExist = asyncErrorHandler(async (req, res, next) => {
   next();
 });
 
+const check = asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const question = await Question.findById({ _id: id });
+  if (!question) {
+    return next(new CustomError('Question not found'), 404);
+  }
+  req.question = question;
+  next();
+});
+
 const checkAnswerExist = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
 

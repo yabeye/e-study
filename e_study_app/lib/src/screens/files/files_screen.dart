@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:e_study_app/src/providers/question_provider.dart';
 import 'package:e_study_app/src/screens/files/file_card.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +9,7 @@ import 'package:e_study_app/src/models/answer.model.dart';
 import 'package:e_study_app/src/models/question.model.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/files.dart';
+import '../../models/file_model.dart';
 import '../../models/user.model.dart';
 import '../../widgets/common_ui.dart';
 import '../question/question_card.dart';
@@ -25,19 +27,42 @@ class _FilesScreenState extends State<FilesScreen> {
   List<FileModel> filteredFiles = [];
   String _filterKey = "All";
 
+  Timer? _timer;
+
+  @override
+  void dispose() {
+    _timer!.cancel();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
     _questionProvider = context.read<QuestionProvider>();
     allFiles = _questionProvider.files;
     filteredFiles = allFiles;
+    afterBuildCreated(() async {
+      await fetchAllQuestions();
+      _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+        await fetchAllQuestions();
+      });
+    });
+  }
+
+  Future<void> fetchAllQuestions() async {
+    await context.read<QuestionProvider>().getQuestions();
+
+    allFiles = [..._questionProvider.files];
+    filterQuestion();
   }
 
   void filterQuestion() {
     filteredFiles = [];
 
     filteredFiles = allFiles
-        .where((q) => (q.category == _filterKey) || _filterKey == "All")
+        .where((q) =>
+            (q.category.toLowerCase() == _filterKey.toLowerCase()) ||
+            _filterKey == "All")
         .toList();
 
     setState(() {});

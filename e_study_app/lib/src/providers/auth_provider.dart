@@ -61,6 +61,7 @@ class AuthProvider extends ChangeNotifier {
       "password": password,
     });
     token = response['data']['accessToken'];
+
     print("User REs: ${response['data']['user']}");
     currentUser = User.fromJson(response['data']['user']);
     print("DONE!!!!");
@@ -103,6 +104,30 @@ class AuthProvider extends ChangeNotifier {
     if (resQuestions == null) return null;
 
     return User.fromJson(resQuestions);
+  }
+  // auth/uploadProfile
+
+  Future<User?> updateUser({
+    required String firstName,
+    required String lastName,
+    required String username,
+  }) async {
+    print("START: ");
+    final response = await _provider.patch("users", {
+      "firstName": firstName,
+      "lastName": lastName,
+      "username": username,
+    });
+    final resQuestions = response['data']['updatedUser'];
+    print("REq Questioon: ${resQuestions}");
+    if (resQuestions == null) return null;
+
+    currentUser = User.fromJson(resQuestions);
+    final SharedPreferences pref = await _prefs;
+    await pref.setString('user', jsonEncode(currentUser));
+
+    notifyListeners();
+    return currentUser;
   }
 
   clear() async {

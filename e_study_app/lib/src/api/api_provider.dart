@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,7 +17,7 @@ class ApiProvider {
       final response = await http.get(completeUri);
 
       responseJson = _response(response);
-    } on SocketException {
+    } on FetchDataException {
       throw FetchDataException('No Internet connection');
     }
     return responseJson;
@@ -42,7 +40,7 @@ class ApiProvider {
         'authorization': "Bearer ${token ?? ""}",
       });
       responseJson = _response(response);
-    } on SocketException {
+    } on FetchDataException {
       throw FetchDataException('No Internet connection');
     }
     return responseJson;
@@ -55,15 +53,15 @@ class ApiProvider {
       String? token = (pref.getString('token'));
 
       final completeUri = Uri.parse(_baseUrl + url);
-      print("HOST ${completeUri.data}");
+
       final response =
           await http.patch(completeUri, body: jsonEncode(body), headers: {
         'Content-Type': 'application/json',
-        'authorization': "Bearer ${token!}",
+        'authorization': "Bearer ${token ?? ""}",
       });
       print("REsponse: ${response.body}");
       responseJson = _response(response);
-    } on SocketException {
+    } on FetchDataException {
       throw FetchDataException('No Internet connection');
     }
     return responseJson;

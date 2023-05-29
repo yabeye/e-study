@@ -1,17 +1,16 @@
-import 'package:e_study_app/src/models/answer.model.dart';
+import 'package:e_study_app/src/providers/question_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:provider/provider.dart';
 
 import '../../common/asset_locations.dart';
 import '../../common/constants.dart';
-import '../../models/files.dart';
-import '../../models/user.model.dart';
+import '../../models/file_model.dart';
 import '../../widgets/common_ui.dart';
 
-class FileCard extends StatelessWidget {
+class FileCard extends StatefulWidget {
   const FileCard({
     super.key,
     required this.currentFile,
@@ -19,8 +18,30 @@ class FileCard extends StatelessWidget {
   final FileModel currentFile;
 
   @override
+  State<FileCard> createState() => _FileCardState();
+}
+
+class _FileCardState extends State<FileCard> {
+  late final QuestionProvider _questionProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _questionProvider = context.read<QuestionProvider>();
+  }
+
+  void _downloadFile() async {
+    try {
+      await _questionProvider.downloadFile();
+    } catch (e) {
+      toast(e.toString());
+      print("Error: ${e.toString()}");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final uploadedBy = currentFile.uploadedBy;
+    final uploadedBy = widget.currentFile.uploadedBy;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       // padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -62,7 +83,7 @@ class FileCard extends StatelessWidget {
                 ],
               ),
               Text(
-                currentFile.createdAt.timeAgo,
+                widget.currentFile.createdAt.timeAgo,
                 style: secondaryTextStyle(),
               )
             ],
@@ -70,7 +91,7 @@ class FileCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              currentFile.name,
+              widget.currentFile.name,
               style: primaryTextStyle(
                 size: textSecondarySizeGlobal.toInt(),
               ),
@@ -80,15 +101,13 @@ class FileCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                currentFile.category,
+                widget.currentFile.category,
                 style: secondaryTextStyle(),
               ),
               TextButton.icon(
-                onPressed: () {
-                  toast("Downloading a file ...");
-                },
+                onPressed: _downloadFile,
                 icon: const Icon(Icons.download),
-                label: Text('Download (${currentFile.size})'),
+                label: const Text('Download'),
               ),
             ],
           ),

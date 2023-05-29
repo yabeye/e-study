@@ -35,15 +35,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
     afterBuildCreated(() async {
       await fetchAllQuestions();
-      // _timer = Timer.periodic(const Duration(seconds: 60), (timer) async {
-      //   await fetchAllQuestions();
-      // });
+      _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+        await fetchAllQuestions();
+      });
     });
   }
 
   @override
   void dispose() {
-    // _timer!.cancel();
+    _timer!.cancel();
     super.dispose();
   }
 

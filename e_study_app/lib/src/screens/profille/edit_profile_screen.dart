@@ -1,3 +1,5 @@
+// import 'dart:io';
+
 import 'package:e_study_app/src/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -11,14 +13,14 @@ import '../../theme/theme.dart';
 import '../../widgets/common_ui.dart';
 import '../splash_screeen.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> {
   late final AuthProvider _authProvider;
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -31,26 +33,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void initState() {
     super.initState();
     _authProvider = context.read<AuthProvider>();
+    final user = _authProvider.currentUser!;
+    _firstNameController.text = user.firstName!;
+    _lastNameController.text = user.lastName!;
+    _usernameController.text = user.username!;
   }
 
-  signUp() async {
-    // if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-    //   toasty(
-    //     context,
-    //     "Enter both email and password!",
-    //     textColor: Colors.red,
-    //   );
-    //   return;
-    // }
-
+  _updateProfile() async {
     try {
-      await _authProvider.signUp(
+      await _authProvider.updateUser(
         firstName: _firstNameController.text,
         lastName: _lastNameController.text,
         username: _usernameController.text,
-        email: _emailController.text,
-        password: _passwordController.text,
-        phone: _phoneController.text,
       );
 
       // ignore: use_build_context_synchronously
@@ -82,7 +76,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           children: [
             20.height,
             Text(
-              "Sing Up",
+              "Edit Profile",
               style: boldTextStyle(size: 18),
             ),
             20.height,
@@ -122,22 +116,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             20.height,
             TextFormField(
               autofocus: true,
-              controller: _emailController,
-              style: boldTextStyle(
-                weight: FontWeight.normal,
-              ),
-              decoration: inputDecoration(
-                context,
-                labelText: "Email",
-                prefixIcon: const Icon(Icons.search),
-              ),
-              onFieldSubmitted: (v) {
-                hideKeyboard(context);
-              },
-            ),
-            20.height,
-            TextFormField(
-              autofocus: true,
               controller: _usernameController,
               style: boldTextStyle(
                 weight: FontWeight.normal,
@@ -153,45 +131,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               },
             ),
             20.height,
-            TextFormField(
-              autofocus: true,
-              controller: _passwordController,
-              style: boldTextStyle(
-                weight: FontWeight.normal,
-              ),
-              decoration: inputDecoration(
-                context,
-                labelText: "Password",
-                hintStyle: secondaryTextStyle(),
-                prefixIcon: const Icon(Icons.search),
-              ),
-              onFieldSubmitted: (v) {
-                hideKeyboard(context);
-              },
-            ),
-            20.height,
-            TextFormField(
-              keyboardType: TextInputType.number,
-              autofocus: true,
-              controller: _phoneController,
-              style: boldTextStyle(
-                weight: FontWeight.normal,
-              ),
-              maxLength: 13,
-              decoration: inputDecoration(
-                context,
-                labelText: "Phone Number",
-                hintStyle: secondaryTextStyle(),
-                prefixIcon: const Icon(Icons.search),
-              ),
-              onFieldSubmitted: (v) {
-                hideKeyboard(context);
-              },
-            ),
-            20.height,
             AppButton(
-              onTap: signUp,
-              text: 'Signup',
+              onTap: _updateProfile,
+              text: 'Update',
               textColor: whiteColor,
               color: primaryColor,
               width: context.width() * .9,

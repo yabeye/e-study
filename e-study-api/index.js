@@ -30,10 +30,11 @@ app.use('/api/hi', (_, res) => {
     message: '✅ bye',
   });
 });
-app.use('/api', router);
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+app.use('/api', router);
 
 app.use(errorHandler);
 app.get('*', (_, res) => {

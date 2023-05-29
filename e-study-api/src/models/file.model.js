@@ -3,6 +3,11 @@ import mongoose from 'mongoose';
 import { ALL_REPORTS } from '../common/constants.js';
 
 const FileSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'Please provide a name'],
+    maxLength: 64,
+  },
   category: {
     type: String,
     required: [true, 'Please provide a category'],
@@ -13,11 +18,10 @@ const FileSchema = new mongoose.Schema({
     ref: 'user',
     required: true,
   },
-  content: {
+  path: {
     type: String,
-    required: [true, 'Please provide a content'],
-    minlength: [10, 'Please provide a title at least 10 characters'],
-    maxLength: 1024,
+    required: [true, 'Please provide a path'],
+    maxLength: 64,
   },
   createdAt: {
     type: Date,
@@ -50,19 +54,19 @@ const FileSchema = new mongoose.Schema({
   },
 });
 
-FileSchema.pre('save', async function (next) {
-  if (!this.isModified('answeredBy')) return next();
+// FileSchema.pre('save', async function (next) {
+//   if (!this.isModified('answeredBy')) return next();
 
-  try {
-    const question = await Question.findById({ _id: this.question });
-    await question.save();
-    question.answers.push(this._id);
-    next();
-  } catch (err) {
-    return next(err);
-  }
-});
+//   try {
+//     const question = await Question.findById({ _id: this.question });
+//     await question.save();
+//     question.answers.push(this._id);
+//     next();
+//   } catch (err) {
+//     return next(err);
+//   }
+// });
 
-const Answer = mongoose.model('Answer', FileSchema);
+const FileModel = mongoose.model('File', FileSchema);
 
-export default Answer;
+export default FileModel;
