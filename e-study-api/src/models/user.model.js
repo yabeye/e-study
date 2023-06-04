@@ -51,6 +51,10 @@ const UserSchema = new mongoose.Schema(
       enum: ALL_ROLES,
       default: DEFAULT_ROLE,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     profileImage: {
       type: String,
     },
@@ -73,6 +77,7 @@ const UserSchema = new mongoose.Schema(
       },
     ],
   },
+
   { collection: 'users', timestamps: true }
 );
 
@@ -126,6 +131,7 @@ User.validateRegistrationBody = (body) => {
     username: Joi.string().max(64).required(),
     password: Joi.string().min(6).max(64).required(),
   });
+  // .options({ allowUnknown: true });
   return schema.validate(body, {
     abortEarly: true,
     errors: {
@@ -144,6 +150,7 @@ User.validatePatchBody = (body) => {
     phone: Joi.string().min(9).max(14).optional(),
     username: Joi.string().max(64),
     password: Joi.string().min(6).max(64),
+    isActive: Joi.bool().optional(),
   });
   return schema.validate(body, {
     abortEarly: true,

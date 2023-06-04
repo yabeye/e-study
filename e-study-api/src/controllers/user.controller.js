@@ -46,6 +46,7 @@ const getUserById = asyncErrorHandler(async (req, res, next) => {
 
 const editProfile = asyncErrorHandler(async (req, res, next) => {
   const body = req.body;
+  console.log('Body then: ', body);
 
   const user = await User.findByIdAndUpdate(
     req.user.id,
@@ -54,11 +55,23 @@ const editProfile = asyncErrorHandler(async (req, res, next) => {
   ).select('-password -__v');
   return res.status(201).json({
     success: true,
-    message: 'Updated Profile',
+    message: 'Updated User',
     data: {
       updatedUser: user,
     },
   });
 });
 
-export { getAllUsers, getUserById, editProfile };
+const deleteUser = asyncErrorHandler(async (req, res, next) => {
+  const user = req.user;
+  await User.deleteOne({ id: user.id });
+  return res.status(200).json({
+    success: true,
+    message: 'Question suspended successfully',
+    data: {
+      question: user,
+    },
+  });
+});
+
+export { getAllUsers, getUserById, editProfile, deleteUser };

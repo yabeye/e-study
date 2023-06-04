@@ -1,6 +1,9 @@
 import express from 'express';
 
-import { checkAccessToRoute } from '../middlewares/auth.middleware.js';
+import {
+  checkAccessToRoute,
+  checkBlock,
+} from '../middlewares/auth.middleware.js';
 import {
   checkUserExists,
   validateLoginBody,
@@ -25,7 +28,7 @@ router.get('/confirm', confirmResetPassword);
 
 router.post(
   '/uploadProfile',
-  [checkAccessToRoute, profileImageUpload.single('profileImage')],
+  [checkAccessToRoute, checkBlock, profileImageUpload.single('profileImage')],
   uploadProfile
 );
 

@@ -26,7 +26,6 @@ const checkAccessToRoute = async (req, res, next) => {
     if (err) {
       return next(unAuthorizedError);
     }
-    console.log('DEcoded id is ', decoded.id);
     req.user = await User.findById(decoded.id);
     if (!req.user) {
       return next(new CustomError('User not found', 400));
@@ -34,6 +33,13 @@ const checkAccessToRoute = async (req, res, next) => {
 
     next();
   });
+};
+
+const checkBlock = (req, res, next) => {
+  if (!req.user.isActive) {
+    return next(new CustomError('You have been blocked', 403));
+  }
+  next();
 };
 
 const getAdminAccess = asyncErrorHandler(async (req, res, next) => {
@@ -60,4 +66,9 @@ const getQuestionOwnerAccess = asyncErrorHandler(async (req, res, next) => {
   next();
 });
 
-export { checkAccessToRoute, getAdminAccess, getQuestionOwnerAccess };
+export {
+  checkAccessToRoute,
+  getAdminAccess,
+  getQuestionOwnerAccess,
+  checkBlock,
+};

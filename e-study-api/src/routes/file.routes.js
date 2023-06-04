@@ -9,7 +9,10 @@ import fs from 'fs';
 // import { isValidId } from '../middlewares/validation.middleware';
 
 import multer from 'multer';
-import { checkAccessToRoute } from '../middlewares/auth.middleware.js';
+import {
+  checkAccessToRoute,
+  checkBlock,
+} from '../middlewares/auth.middleware.js';
 import { isValidId } from '../middlewares/validation.middleware.js';
 import { fileURLToPath } from 'url';
 
@@ -105,6 +108,7 @@ router.get('/download', (req, res) => {
 
 // PROTECTED ROUTES
 router.use(checkAccessToRoute);
+router.use(checkBlock);
 
 router.post('/upload', [upload.single('file')], async (req, res, next) => {
   const filePath = req.file.path;

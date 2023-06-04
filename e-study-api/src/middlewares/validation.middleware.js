@@ -48,10 +48,20 @@ const checkUserExists = async (req, res, next) => {
   next();
 };
 
+const checkUserExistsFromId = async (req, res, next) => {
+  const { id } = req.params;
+  console.log('Via id is ', id);
+  const user = await User.findOne({ _id: id });
+
+  if (!user) return next(new CustomError('User not found', 400));
+  req.user = user;
+  next();
+};
+
 const validateUserUpdateData = async (req, res, next) => {
   const prevUser = await User.findById(req.user.id);
 
-  const { firstName, lastName, phone, username, email } = req.body;
+  const { firstName, lastName, phone, username, email, isActive } = req.body;
 
   const body = {
     firstName: firstName ?? prevUser.firstName,
@@ -59,6 +69,7 @@ const validateUserUpdateData = async (req, res, next) => {
     phone: phone ?? prevUser.phone,
     username: username ?? prevUser.username,
     email: email ?? prevUser.email,
+    isActive: isActive ?? prevUser.isActive ?? true,
   };
 
   const { error } = User.validatePatchBody(body);
@@ -137,4 +148,5 @@ export {
   isValidId,
   validateNewQuestionBody,
   checkQuestionData,
+  checkUserExistsFromId,
 };

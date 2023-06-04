@@ -38,6 +38,15 @@ const register = asyncErrorHandler(async (req, res, next) => {
 const login = asyncErrorHandler(async (req, res, next) => {
   try {
     const user = req.user;
+
+    if (!user.isActive) {
+      return res.status(404).send({
+        success: true,
+        message: 'You have been blocked!',
+        data: {},
+      });
+    }
+
     if (!(await comparePassword(req.body.password, user.password))) {
       throw new CustomError('Wrong password', 400);
     }
@@ -67,10 +76,19 @@ const resetPassword = asyncErrorHandler(async (req, res, next) => {
   }
 
   const user = await User.findOne({ email: email });
+
   if (!user) {
     return res.status(404).send({
       success: true,
       message: 'User not found!',
+      data: {},
+    });
+  }
+
+  if (!user.isActive) {
+    return res.status(404).send({
+      success: true,
+      message: 'You have been blocked!',
       data: {},
     });
   }

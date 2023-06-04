@@ -7,7 +7,9 @@ import CustomError from '../common/CustomError.js';
 import { request } from 'express';
 
 const getAllQuestions = asyncErrorHandler(async (req, res, next) => {
-  let query = Question.find({ isActive: true })
+  let query = Question.find({
+    // isActive: true
+  })
     .populate({
       path: 'askedBy',
       model: 'User',
@@ -34,7 +36,7 @@ const getAllQuestions = asyncErrorHandler(async (req, res, next) => {
 const getQuestion = asyncErrorHandler(async (req, res, next) => {
   let question = await Question.findOne({
     _id: req.question.id,
-    isActive: true,
+    // isActive: true,
   })
     .populate({
       path: 'askedBy',
@@ -96,8 +98,15 @@ const addQuestion = asyncErrorHandler(async (req, res, next) => {
 });
 
 const updateQuestion = asyncErrorHandler(async (req, res, next) => {
-  const { title, description, category, subject, isOpen, reportedBy } =
-    req.body;
+  const {
+    title,
+    description,
+    category,
+    subject,
+    isOpen,
+    reportedBy,
+    isActive,
+  } = req.body;
 
   console.log('req.question', req.question);
 
@@ -110,11 +119,18 @@ const updateQuestion = asyncErrorHandler(async (req, res, next) => {
     voteCount: [],
     voteCountDown: [],
     reportedBy: req.question.reportedBy ?? [],
+    isActive: isActive ?? req.question.isActive,
   };
 
-  if (reportedBy !== null) {
+  if (reportedBy) {
+    console.log('Reporeted by value: ', reportedBy);
     question.reportedBy.push(reportedBy);
   }
+  console.log('1', question.reportedBy);
+  if (isActive === true) {
+    question.reportedBy = [...[]];
+  }
+  console.log('2', question.reportedBy);
 
   if (req.body.voting == true) {
     let index = req.question.voteCount.indexOf(req.user.id);
@@ -162,20 +178,31 @@ const updateQuestion = asyncErrorHandler(async (req, res, next) => {
 
 const deleteQuestion = asyncErrorHandler(async (req, res, next) => {
   const question = req.question;
-  question.isActive = false;
-  question.answer.forEach(async (e) => {
-    await Answer.findByIdAndUpdate(e, { isActive: false });
-  });
-
-  await question.save();
+  await Question.deleteOne({ id: question.id });
   return res.status(200).json({
     success: true,
-    message: 'Question deleted successfully',
+    message: 'Question suspended successfully',
     data: {
       question: question,
     },
   });
 });
+// const deleteQuestion = asyncErrorHandler(async (req, res, next) => {
+//   const question = req.question;
+//   question.isActive = false;
+//   question.answer.forEach(async (e) => {
+//     await Answer.findByIdAndUpdate(e, { isActive: false });
+//   });
+
+//   await question.save();
+//   return res.status(200).json({
+//     success: true,
+//     message: 'Question deleted successfully',
+//     data: {
+//       question: question,
+//     },
+//   });
+// });
 
 const bookmarkToggle = asyncErrorHandler(async (req, res, next) => {
   // This is how it works, if a question with a given id is not exist in users bookmark

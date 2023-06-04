@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   checkAccessToRoute,
+  checkBlock,
   getQuestionOwnerAccess,
 } from '../middlewares/auth.middleware.js';
 import { checkQuestionExist } from '../common/helpers/questions.helper.js';
@@ -27,6 +28,13 @@ router.get('/all', getAllQuestions);
 // PROTECTED ROUTES
 router.use(checkAccessToRoute);
 
+router.delete(
+  '/:id',
+  [checkQuestionExist, getQuestionOwnerAccess],
+  deleteQuestion
+);
+
+router.use(checkBlock);
 router.post('/ask', [validateNewQuestionBody], addQuestion);
 //TODO: File upload using multer for pdf, docs, ppts,  images etc ...
 router.patch(
@@ -40,10 +48,5 @@ router.patch(
 );
 
 router.patch('/bookmark/:id', [checkQuestionExist], bookmarkToggle);
-router.delete(
-  '/:id',
-  [checkQuestionExist, getQuestionOwnerAccess],
-  deleteQuestion
-);
 
 export default router;
