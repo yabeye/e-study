@@ -8,7 +8,7 @@ import { request } from 'express';
 
 const getAllQuestions = asyncErrorHandler(async (req, res, next) => {
   let query = Question.find({
-    // isActive: true
+    isActive: true,
   })
     .populate({
       path: 'askedBy',
@@ -36,7 +36,7 @@ const getAllQuestions = asyncErrorHandler(async (req, res, next) => {
 const getQuestion = asyncErrorHandler(async (req, res, next) => {
   let question = await Question.findOne({
     _id: req.question.id,
-    // isActive: true,
+    isActive: true,
   })
     .populate({
       path: 'askedBy',
