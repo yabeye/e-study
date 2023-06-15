@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:e_study_app/src/models/answer.model.dart';
 import 'package:e_study_app/src/models/file_model.dart';
 import 'package:e_study_app/src/models/question.model.dart';
@@ -9,11 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 import '../api/api_provider.dart';
-import '../common/constants.dart';
-import '../models/user.model.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -100,7 +94,10 @@ class QuestionProvider extends ChangeNotifier {
     var resQuestions = response['data']['questions'];
     clear();
     for (int i = 0; i < resQuestions.length; i++) {
-      questions.add(Question.fromJson(resQuestions[i]));
+      final q = Question.fromJson(resQuestions[i]);
+      if (q.isActive == true) {
+        questions.add(q);
+      }
     }
 
     response = await _provider.get("files/all");
@@ -118,13 +115,47 @@ class QuestionProvider extends ChangeNotifier {
     required String description,
     required String category,
     required String subject,
+    required String hashTags,
   }) async {
     await _provider.post("questions/ask", {
       "title": title,
       "description": description,
       "category": category,
       "subject": subject,
+      "hashTags": hashTags,
     });
+  }
+
+  Future<void> deleteQuestion({
+    required String id,
+  }) async {
+    await _provider.delete("questions/$id");
+  }
+
+  Future updateQuestion({
+    String? id,
+    String? title,
+    String? description,
+    String? category,
+    String? subject,
+    String? hashTags,
+    String? comment,
+  }) async {
+    final response = await _provider.patch(
+      "questions/$id",
+      {
+        "title": title,
+        "description": description,
+        "category": category,
+        "subject": subject,
+        "hashTags": hashTags,
+        "comment": comment
+      },
+    );
+    final resQuestions = response['data']['question'];
+    await getQuestions();
+
+    return Question.fromJson(resQuestions);
   }
 
   Future<void> uploadFile({

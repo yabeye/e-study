@@ -1,6 +1,5 @@
 import 'package:e_study_app/src/common/extensions/string_extensions.dart';
-import 'package:e_study_app/src/models/question.model.dart';
-import 'package:e_study_app/src/models/user.model.dart';
+import 'package:e_study_app/src/helpers/ui_helpers.dart';
 import 'package:e_study_app/src/providers/auth_provider.dart';
 import 'package:e_study_app/src/screens/profille/edit_profile_screen.dart';
 import 'package:e_study_app/src/screens/splash_screeen.dart';
@@ -12,9 +11,7 @@ import 'package:provider/provider.dart';
 
 import '../../common/asset_locations.dart';
 import '../../common/constants.dart';
-import '../../theme/theme.dart';
 import '../home/choose_auth.dart';
-import '../question/question_card.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -32,7 +29,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     _authProvider = context.read<AuthProvider>();
     _isAuth = _authProvider.isLoggedIn;
-    print("Is Auth: ${_isAuth}");
     super.initState();
   }
 
@@ -44,12 +40,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: !_isAuth
               ? []
               : [
-                  GestureDetector(
-                      onTap: () async {
+                  IconButton(
+                    onPressed: () => confirm(context,
+                        message:
+                            "Are you sure you want to delete your account ?",
+                        () async {
+                      try {
+                        await _authProvider.deleteUser(
+                            id: _authProvider.currentUser!.id ?? "");
+                        toast("Your account has been deleted!");
+
                         await _authProvider.clear();
                         // ignore: use_build_context_synchronously
                         const SplashScreen().launch(context, isNewTask: true);
-                      },
+                      } catch (e) {
+                        toast("Unable to delete your account at the moment!");
+                        print(e.toString());
+                      }
+                    }),
+                    icon: const Icon(
+                      Icons.delete_outlined,
+                      color: Colors.red,
+                    ),
+                  ),
+                  const SizedBox().paddingSymmetric(horizontal: 8),
+                  GestureDetector(
+                      onTap: () => confirm(
+                            context,
+                            message: "Are you sure you want to logout ?",
+                            () async {
+                              await _authProvider.clear();
+                              // ignore: use_build_context_synchronously
+                              const SplashScreen()
+                                  .launch(context, isNewTask: true);
+                            },
+                          ),
                       child: const Icon(
                         Icons.logout,
                         color: Colors.white,
@@ -93,6 +118,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
           : CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(child: 10.height),
+                SliverToBoxAdapter(
+                    child: Column(
+                  children: [
+                    Text(
+                      "Badge(s) Awarded",
+                      style: primaryTextStyle(),
+                    ),
+                    5.height,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        svgBasic.svgImage(size: 32, color: Colors.grey).visible(
+                            (_authProvider.currentUser!.awards ?? [])
+                                .contains("B")),
+                        svgSilver
+                            .svgImage(
+                              size: 32,
+                              color: Colors.grey,
+                            )
+                            .visible((_authProvider.currentUser!.awards ?? [])
+                                .contains("S")),
+                        svgGold
+                            .svgImage(
+                              size: 32,
+                            )
+                            .visible((_authProvider.currentUser!.awards ?? [])
+                                .contains("G")),
+                      ],
+                    ),
+                  ],
+                )),
+                SliverToBoxAdapter(child: 20.height),
                 SliverToBoxAdapter(
                   child: SizedBox(
                     child: _authProvider.currentUser!.profilePic == null
@@ -149,6 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     label: const Text("Edit Profile"),
                   ),
                 ),
+
                 SliverToBoxAdapter(
                   child: Row(
                     children: [

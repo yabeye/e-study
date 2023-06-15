@@ -71,13 +71,11 @@ class QuestionCard extends StatelessWidget {
                 10.height,
                 if (question.hashTags.isNotEmpty) ...[
                   TextScroll(
-                    question.hashTags.map((e) => "#" + e).toList().join(" "),
+                    question.hashTags.map((e) => "#$e").toList().join(" "),
                     velocity: const Velocity(pixelsPerSecond: Offset(40, 0)),
                     style: secondaryTextStyle(),
                   ),
-                  const SizedBox(
-                    height: 2,
-                  ),
+                  const SizedBox(height: 2),
                 ],
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

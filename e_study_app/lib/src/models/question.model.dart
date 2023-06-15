@@ -12,20 +12,21 @@ Question questionFromJson(String str) => Question.fromJson(json.decode(str));
 String questionToJson(Question data) => json.encode(data.toJson());
 
 class Question {
-  final String id;
-  final String title;
-  final String description;
-  final String category;
-  final String subject;
-  final bool isOpen;
-  final DateTime createdAt;
-  final User askedBy;
-  final List<dynamic> voteCount;
-  final List<dynamic> voteCountDown;
-  final List<Answer> answers;
-  final bool isActive;
-  final List<dynamic> reportedBy;
-  final List<String> hashTags;
+  String id;
+  String title;
+  String description;
+  String category;
+  String subject;
+  bool isOpen;
+  DateTime createdAt;
+  User askedBy;
+  List<dynamic> voteCount;
+  List<dynamic> voteCountDown;
+  List<Answer> answers;
+  bool isActive;
+  List<dynamic> reportedBy;
+  List<String> hashTags;
+  List<String> comments;
 
   Question({
     required this.id,
@@ -42,6 +43,7 @@ class Question {
     required this.isActive,
     required this.reportedBy,
     this.hashTags = const [],
+    this.comments = const [],
   });
 
   Question copyWith({
@@ -58,6 +60,7 @@ class Question {
     List<Answer>? answers,
     bool? isActive,
     List<dynamic>? reportedBy,
+    List<String>? comments,
   }) =>
       Question(
         id: id ?? this.id,
@@ -73,6 +76,7 @@ class Question {
         answers: answers ?? this.answers,
         isActive: isActive ?? this.isActive,
         reportedBy: reportedBy ?? this.reportedBy,
+        comments: comments ?? this.comments,
       );
 
   factory Question.fromJson(Map<String, dynamic> json) => Question(
@@ -90,6 +94,8 @@ class Question {
             List<Answer>.from(json["answers"].map((x) => Answer.fromJson(x))),
         isActive: json["isActive"],
         reportedBy: List<dynamic>.from(json["reportedBy"].map((x) => x)),
+        hashTags: List<String>.from(json["hashTags"].map((x) => x)),
+        comments: List<String>.from((json["comments"] ?? []).map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
@@ -106,6 +112,7 @@ class Question {
         "answers": List<dynamic>.from(answers.map((x) => x)),
         "isActive": isActive,
         "reportedBy": List<dynamic>.from(reportedBy.map((x) => x)),
+        "comments": List<dynamic>.from(comments.map((x) => x)),
       };
 
   static List<Question> filterQuestions(

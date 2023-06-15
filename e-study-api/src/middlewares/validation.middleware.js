@@ -71,7 +71,7 @@ const validateUserUpdateData = async (req, res, next) => {
     username: username ?? prevUser.username,
     email: email ?? prevUser.email,
     isActive: isActive ?? prevUser.isActive ?? true,
-    awards: awards ?? prevUser.awards,
+    awards: awards ?? prevUser.awards ?? [],
   };
 
   const { error } = User.validatePatchBody(body);
@@ -99,12 +99,13 @@ const validateNewQuestionBody = async (req, res, next) => {
 };
 
 const checkQuestionData = async (req, res, next) => {
-  const { title, description, category, subject } = req.body;
+  const { title, description, category, subject, comment } = req.body;
   let question = {
     title: title ?? req.question.title,
     description: description ?? req.question.description,
     category: category ?? req.question.category,
     subject: subject ?? req.question.subject,
+    comment: comment ?? req.question.comment,
   };
 
   const { error } = Question.validateNewQuestionBody(question);

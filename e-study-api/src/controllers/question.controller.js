@@ -76,7 +76,9 @@ const getQuestion = asyncErrorHandler(async (req, res, next) => {
 });
 
 const addQuestion = asyncErrorHandler(async (req, res, next) => {
-  const { title, description, category, subject } = req.body;
+  const { title, description, category, subject, hashTags = '' } = req.body;
+
+  const tags = hashTags.split(',');
 
   const question = await Question({
     title,
@@ -84,6 +86,7 @@ const addQuestion = asyncErrorHandler(async (req, res, next) => {
     category,
     subject,
     askedBy: req.user.id,
+    hashTags: tags,
   });
   await question.save();
   const user = await User.findById({ _id: req.user.id });
@@ -107,6 +110,8 @@ const updateQuestion = asyncErrorHandler(async (req, res, next) => {
     isOpen,
     reportedBy,
     isActive,
+    hashTags,
+    comment,
   } = req.body;
 
   console.log('req.question', req.question);
@@ -121,10 +126,15 @@ const updateQuestion = asyncErrorHandler(async (req, res, next) => {
     voteCountDown: [],
     reportedBy: req.question.reportedBy ?? [],
     isActive: isActive ?? req.question.isActive,
+    comments: [...req.question.comments],
+    hashTags: hashTags ? hashTags.split(',') : req.question.hashTags,
   };
 
+  if (comment) {
+    question.comments.push(comment);
+  }
+
   if (reportedBy) {
-    console.log('Reporeted by value: ', reportedBy);
     question.reportedBy.push(reportedBy);
   }
   console.log('1', question.reportedBy);

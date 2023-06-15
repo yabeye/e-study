@@ -74,6 +74,16 @@ const QuestionSchema = new mongoose.Schema({
       ref: 'answer',
     },
   ],
+  hashTags: [
+    {
+      type: String,
+    },
+  ],
+  comments: [
+    {
+      type: String,
+    },
+  ],
   isActive: {
     type: Boolean,
     default: true,
@@ -88,6 +98,8 @@ Question.validateNewQuestionBody = (body) => {
     description: Joi.string().min(10).max(255).required(),
     category: Joi.string().max(64).required(),
     subject: Joi.string().max(64).required(),
+    hashTags: Joi.string(),
+    comment: Joi.string(),
   });
   return schema.validate(body, {
     abortEarly: true,

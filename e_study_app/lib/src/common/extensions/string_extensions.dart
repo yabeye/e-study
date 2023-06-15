@@ -20,7 +20,7 @@ extension stringExtensions on String {
   Widget svgImage({double? size, Color? color}) {
     return SvgPicture.asset(
       this,
-      color: color ?? whiteColor,
+      color: color,
       width: size ?? 20,
       height: size ?? 20,
     );

@@ -1,5 +1,6 @@
 import 'package:e_study_app/src/api/exceptions.dart';
 import 'package:e_study_app/src/common/constants.dart';
+import 'package:e_study_app/src/models/question.model.dart';
 import 'package:e_study_app/src/providers/question_provider.dart';
 import 'package:e_study_app/src/theme/theme.dart';
 import 'package:e_study_app/src/widgets/common_ui.dart';
@@ -7,14 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 
-class NewQuestionScreen extends StatefulWidget {
-  const NewQuestionScreen({super.key});
+class UpdateQuestion extends StatefulWidget {
+  const UpdateQuestion({super.key, required this.question});
+  final Question question;
 
   @override
-  State<NewQuestionScreen> createState() => _NewQuestionScreenState();
+  State<UpdateQuestion> createState() => _UpdateQuestionState();
 }
 
-class _NewQuestionScreenState extends State<NewQuestionScreen> {
+class _UpdateQuestionState extends State<UpdateQuestion> {
   late final QuestionProvider _questionProvider;
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
@@ -26,6 +28,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
   List<String> _subjects = naturalCategories;
 
   bool _isCategoryError = false;
+  late Question question;
 
   @override
   void initState() {
@@ -33,6 +36,15 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
     _questionProvider = context.read<QuestionProvider>();
     _titleController = TextEditingController();
     _descriptionController = TextEditingController();
+    question = widget.question;
+    afterBuildCreated(() {
+      _selectedCategory = question.category;
+      _selectedSubject = question.subject;
+      _titleController.text = question.title;
+      _descriptionController.text = question.description;
+      _hashTagController.text = (question.hashTags).join(",");
+      setState(() {});
+    });
   }
 
   @override
@@ -43,11 +55,12 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
     super.dispose();
   }
 
-  askNewQuestion() async {
+  updateQuestion() async {
     _isLoading = true;
     setState(() {});
     try {
-      await _questionProvider.addNewQuestions(
+      await _questionProvider.updateQuestion(
+        id: question.id,
         title: _titleController.text,
         description: _descriptionController.text,
         category: _selectedCategory,
@@ -56,8 +69,9 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
       );
       // ignore: use_build_context_synchronously
       context.pop();
+      context.pop();
       // ignore: use_build_context_synchronously
-      toasty(context, "Asked Successfully!");
+      toasty(context, "Updated Successfully!");
     } on BadRequestException catch (e) {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
@@ -80,39 +94,37 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
         children: [
           20.height,
           Text(
-            "Ask new question",
+            "Update Question",
             style: boldTextStyle(),
           ),
           10.height,
-          Text(
-            "Please make sure that your questions clear and on point",
-            style: secondaryTextStyle(),
-            textAlign: TextAlign.center,
-          ),
-          30.height,
-          CommonDropDownComponent(
-            defaultValue: _selectedCategory,
-            items: categories.skip(1).toList(),
-            placeholder: "Select Category",
-            callback: (v) {
-              toast(v);
-              _selectedCategory = v!;
-              // Filtering out the subject based on the current selected subject
+          // CommonDropDownComponent(
+          //   defaultValue: _selectedCategory,
+          //   items: categories.skip(1).toList(),
+          //   placeholder: "Select Category",
+          //   callback: (v) {
+          //     toast(v);
+          //     _selectedCategory = v!;
+          //     // Filtering out the subject based on the current selected subject
 
-              switch (_selectedCategory) {
-                case "Natural":
-                  _subjects = naturalCategories;
-                  break;
-                case "Social":
-                  _subjects = socialCategories;
-                  break;
-                case "Others":
-                  _subjects = otherCategories;
-                  break;
-              }
-              setState(() {});
-            },
-          ),
+          //     switch (_selectedCategory) {
+          //       case "Natural":
+          //         _subjects = naturalCategories;
+          //         break;
+          //       case "Social":
+          //         _subjects = socialCategories;
+          //         break;
+          //       case "Others":
+          //         _subjects = otherCategories;
+          //         break;
+          //       default:
+          //         _subjects = naturalCategories;
+          //         break;
+          //     }
+          //     setState(() {});
+          //   },
+          // ),
+
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
@@ -121,33 +133,35 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
             ),
           ).visible(_isCategoryError),
           10.height,
-          CommonDropDownComponent(
-            defaultValue: _selectedSubject,
-            items: naturalCategories,
-            placeholder: "Select Subject",
-            callback: (v) {
-              _selectedSubject = v!;
+          // CommonDropDownComponent(
+          //   defaultValue: _selectedSubject,
+          //   items: naturalCategories,
+          //   placeholder: "Select Subject",
+          //   callback: (v) {
+          //     _selectedSubject = v!;
 
-              setState(() {});
-            },
-          ).visible(_selectedCategory == "Natural"),
-          CommonDropDownComponent(
-            items: socialCategories,
-            placeholder: "Select Subject",
-            callback: (v) {
-              _selectedSubject = v!;
-              setState(() {});
-            },
-          ).visible(_selectedCategory == "Social"),
-          CommonDropDownComponent(
-            items: otherCategories,
-            placeholder: "Select Subject",
-            callback: (v) {
-              _selectedSubject = v!;
+          //     setState(() {});
+          //   },
+          // ).visible(_selectedCategory == "Natural"),
+          // CommonDropDownComponent(
+          //   defaultValue: _selectedSubject,
+          //   items: socialCategories,
+          //   placeholder: "Select Subject",
+          //   callback: (v) {
+          //     _selectedSubject = v!;
+          //     setState(() {});
+          //   },
+          // ).visible(_selectedCategory == "Social"),
+          // CommonDropDownComponent(
+          //   defaultValue: _selectedSubject,
+          //   items: otherCategories,
+          //   placeholder: "Select Subject",
+          //   callback: (v) {
+          //     _selectedSubject = v!;
 
-              setState(() {});
-            },
-          ).visible(_selectedCategory == "Others"),
+          //     setState(() {});
+          //   },
+          // ).visible(_selectedCategory == "Others"),
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
@@ -222,8 +236,8 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
                 ),
                 20.height,
                 AppButton(
-                  onTap: _isLoading ? null : askNewQuestion,
-                  text: "Ask",
+                  onTap: _isLoading ? null : updateQuestion,
+                  text: "Update Question",
                   textColor: whiteColor,
                   color: primaryColor,
                   width: context.width(),

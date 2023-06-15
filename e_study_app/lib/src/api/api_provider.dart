@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'exceptions.dart';
 
 class ApiProvider {
-  static String publicUrl = "http://10.42.0.1:5100/";
+  static String publicUrl = "http://192.168.39.14:5100/";
   static String baseUrl = "${publicUrl}api/";
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
@@ -61,6 +61,25 @@ class ApiProvider {
         'authorization': "Bearer ${token ?? ""}",
       });
       print("REsponse: ${response.body}");
+      responseJson = _response(response);
+    } on FetchDataException {
+      throw FetchDataException('No Internet connection');
+    }
+    return responseJson;
+  }
+
+  Future<dynamic> delete(String url) async {
+    var responseJson;
+    try {
+      final SharedPreferences pref = await _prefs;
+      String? token = (pref.getString('token'));
+
+      final completeUri = Uri.parse(baseUrl + url);
+
+      final response = await http.delete(completeUri, headers: {
+        'Content-Type': 'application/json',
+        'authorization': "Bearer ${token ?? ""}",
+      });
       responseJson = _response(response);
     } on FetchDataException {
       throw FetchDataException('No Internet connection');

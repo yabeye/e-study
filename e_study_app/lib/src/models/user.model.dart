@@ -19,6 +19,7 @@ class User {
   List<String> question;
   List<String> answer;
   List<String> bookmarks;
+  List<String>? awards;
   String? profilePic;
 
   User({
@@ -33,6 +34,7 @@ class User {
     this.answer = const [],
     this.bookmarks = const [],
     this.profilePic,
+    this.awards = const [],
   });
 
   User copyWith({
@@ -47,6 +49,7 @@ class User {
     List<String>? answer,
     List<String>? bookmarks,
     String? profilePic,
+    List<String>? awards,
   }) =>
       User(
         id: id ?? this.id,
@@ -60,6 +63,7 @@ class User {
         answer: answer ?? this.answer,
         bookmarks: bookmarks ?? this.bookmarks,
         profilePic: profilePic ?? this.profilePic,
+        awards: awards ?? this.awards,
       );
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -73,6 +77,7 @@ class User {
         question: List<String>.from(json["question"].map((x) => x)),
         answer: List<String>.from(json["answer"].map((x) => x)),
         bookmarks: List<String>.from(json["bookmarks"].map((x) => x)),
+        awards: List<String>.from((json["awards"] ?? []).map((x) => x)),
         profilePic: json["profilePic"],
       );
 
@@ -88,5 +93,6 @@ class User {
         "answer": List<dynamic>.from(answer.map((x) => x)),
         "bookmarks": List<dynamic>.from(bookmarks.map((x) => x)),
         "profilePic": profilePic,
+        "awards": List<dynamic>.from((awards ?? []).map((x) => x)),
       };
 }

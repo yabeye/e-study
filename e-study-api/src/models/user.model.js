@@ -135,7 +135,7 @@ User.validateRegistrationBody = (body) => {
     phone: Joi.string().min(9).max(14).required(),
     username: Joi.string().max(64).required(),
     password: Joi.string().min(6).max(64).required(),
-    awards: Joi.required(),
+    // awards: Joi.required(),
   });
   // .options({ allowUnknown: true });
   return schema.validate(body, {

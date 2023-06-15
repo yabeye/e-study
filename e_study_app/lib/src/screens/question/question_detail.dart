@@ -1,7 +1,9 @@
 import 'package:e_study_app/src/common/extensions/string_extensions.dart';
+import 'package:e_study_app/src/helpers/ui_helpers.dart';
 import 'package:e_study_app/src/models/answer.model.dart';
 import 'package:e_study_app/src/models/question.model.dart';
 import 'package:e_study_app/src/screens/question/answer_card.dart';
+import 'package:e_study_app/src/screens/question/update_questions.dart';
 import 'package:e_study_app/src/widgets/common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,9 +20,9 @@ import '../../theme/theme.dart';
 import '../home/choose_auth.dart';
 
 class QuestionDetail extends StatefulWidget {
-  const QuestionDetail({super.key, required this.question});
+  QuestionDetail({super.key, required this.question});
 
-  final Question question;
+  Question question;
 
   @override
   State<QuestionDetail> createState() => _QuestionDetailState();
@@ -30,6 +32,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
   late final AuthProvider _authProvider;
   late final QuestionProvider _questionProvider;
   late final TextEditingController _answerController;
+  final TextEditingController _commentController = TextEditingController();
+
   FocusNode _answerFocus = FocusNode(); //create focus node
   bool _isAuth = false;
   late Question question;
@@ -50,6 +54,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
   @override
   void dispose() {
     _answerController.dispose();
+    _commentController.dispose();
     super.dispose();
   }
 
@@ -113,6 +118,30 @@ class _QuestionDetailState extends State<QuestionDetail> {
     }
   }
 
+  addComment() async {
+    try {
+      final updatedQn = await _questionProvider.updateQuestion(
+        id: question.id,
+        comment: _commentController.text,
+      );
+
+      _commentController.text = "";
+
+      question = updatedQn;
+      setState(() {});
+    } on BadRequestException catch (e) {
+      toasty(context, e.message);
+    } on UnAuthorizedException catch (e) {
+      toasty(context, e.message);
+    } on FetchDataException catch (e) {
+      toasty(context, e.message);
+    } catch (e) {
+      toasty(context, "We are unable to do that!");
+    } finally {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.question.answers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -151,7 +180,28 @@ class _QuestionDetailState extends State<QuestionDetail> {
                 "Report",
                 style: TextStyle(color: whiteColor, fontSize: 12),
               ),
-            )
+            ),
+            IconButton(
+              onPressed: () => confirm(
+                context,
+                message: "Are you sure you want to delete this question?",
+                () async {
+                  try {
+                    await _questionProvider.deleteQuestion(id: question.id);
+                    // ignore: use_build_context_synchronously
+                    context.pop();
+                    toast("Question deleted successfully!");
+                  } catch (e) {
+                    toast("Unable to delete the question!");
+                    print(e.toString());
+                  }
+                },
+              ),
+              icon: const Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
+            ).visible(askedBy.id == _authProvider.currentUser!.id)
           ],
         ),
         showBack: true,
@@ -183,7 +233,11 @@ class _QuestionDetailState extends State<QuestionDetail> {
               ? TextScroll(
                   question.hashTags.map((e) => "#$e").toList().join(" "),
                   velocity: const Velocity(pixelsPerSecond: Offset(40, 0)),
-                  style: secondaryTextStyle(),
+                  style: secondaryTextStyle(
+                    backgroundColor: Colors.grey.shade200,
+                    color: Colors.black,
+                  ),
+                  fadedBorderWidth: .5,
                 )
               : Container(),
         ),
@@ -197,7 +251,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
                   alignment: Alignment.centerRight,
                   child: TextButton.icon(
                     onPressed: () {
-                      toast("Editngg...");
+                      UpdateQuestion(question: question)
+                          .launch(context, isNewTask: false);
                     },
                     icon: const Icon(Icons.edit),
                     label: const Text("Edit Question"),
@@ -282,8 +337,65 @@ class _QuestionDetailState extends State<QuestionDetail> {
         SliverToBoxAdapter(
           child: 5.height,
         ),
-        const SliverToBoxAdapter(
-          child: Divider(),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (_, index) => Text("- ${question.comments[index]}"),
+            childCount: question.comments.length,
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Column(
+            children: [
+              5.height,
+              TextField(
+                controller: _commentController,
+                // minLines: 4,
+                style: boldTextStyle(
+                  weight: FontWeight.normal,
+                ),
+                decoration: inputDecoration(
+                  context,
+                  hintText: "Add clarification comment  ... ",
+                  hintStyle: secondaryTextStyle(),
+                ),
+                // maxLines: 3, //or null
+                onSubmitted: (v) {
+                  hideKeyboard(context);
+                },
+              ),
+              10.height,
+              Align(
+                alignment: Alignment.centerRight,
+                child: AppButton(
+                  onTap: addComment,
+                  text: "Add Comment",
+                  textStyle: const TextStyle(),
+                ),
+              ),
+              5.height,
+            ],
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Column(
+            children: [
+              const Divider(),
+              Text(
+                "Answers (${question.answers.length})",
+                style: primaryTextStyle(),
+              ),
+              15.height,
+            ],
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (_, index) => AnswerCard(
+              answer: question.answers[index],
+            ),
+            childCount: question.answers.length,
+            // childCount: _availableHandyMen.length,
+          ),
         ),
         SliverToBoxAdapter(
           child: !_isAuth
@@ -347,22 +459,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
                       ],
                     ),
                     5.height,
-                    Text(
-                      "Answers (${question.answers.length})",
-                      style: primaryTextStyle(),
-                    ),
-                    15.height,
                   ],
                 ),
-        ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (_, index) => AnswerCard(
-              answer: question.answers[index] as Answer,
-            ),
-            childCount: question.answers.length,
-            // childCount: _availableHandyMen.length,
-          ),
         ),
       ]).paddingSymmetric(horizontal: 12),
     );

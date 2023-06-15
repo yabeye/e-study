@@ -84,6 +84,20 @@ class AppBottomNavBar extends StatelessWidget {
               height: 30,
             ),
           ),
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              svgUser,
+              color: whiteColor,
+              width: 30,
+              height: 30,
+            ),
+            activeIcon: SvgPicture.asset(
+              svgUserSelected,
+              color: whiteColor,
+              width: 30,
+              height: 30,
+            ),
+          ),
         ],
       ),
     );

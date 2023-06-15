@@ -19,3 +19,7 @@ const String svgUserSelected = '$_iconsPath/user-selected.svg';
 const String svgUsers = '$_iconsPath/users.svg';
 const String svgAvatar = '$_iconsPath/avatar.svg';
 const String svgComment = '$_iconsPath/comment.svg';
+
+const String svgBasic = '$_iconsPath/basic.svg';
+const String svgSilver = '$_iconsPath/silver.svg';
+const String svgGold = '$_iconsPath/gold.svg';

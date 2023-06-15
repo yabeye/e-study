@@ -142,6 +142,10 @@ class AuthProvider extends ChangeNotifier {
     return currentUser;
   }
 
+  Future deleteUser({required String id}) async {
+    await _provider.delete("users/$id");
+  }
+
   clear() async {
     currentUser = null;
     token = null;
