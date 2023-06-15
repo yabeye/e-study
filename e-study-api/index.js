@@ -47,6 +47,5 @@ app.get('*', (_, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`The server is started on ${PORT} port.`);
-  console.dir(ip.address());
+  console.log(`The server is started on http://${ip.address()}:${PORT} port.`);
 });

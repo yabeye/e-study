@@ -76,6 +76,11 @@ const UserSchema = new mongoose.Schema(
         ref: 'question',
       },
     ],
+    awards: [
+      {
+        type: String, // "B","S","G"
+      },
+    ],
   },
 
   { collection: 'users', timestamps: true }
@@ -130,6 +135,7 @@ User.validateRegistrationBody = (body) => {
     phone: Joi.string().min(9).max(14).required(),
     username: Joi.string().max(64).required(),
     password: Joi.string().min(6).max(64).required(),
+    awards: Joi.required(),
   });
   // .options({ allowUnknown: true });
   return schema.validate(body, {
@@ -151,6 +157,7 @@ User.validatePatchBody = (body) => {
     username: Joi.string().max(64),
     password: Joi.string().min(6).max(64),
     isActive: Joi.bool().optional(),
+    awards: Joi.required(),
   });
   return schema.validate(body, {
     abortEarly: true,

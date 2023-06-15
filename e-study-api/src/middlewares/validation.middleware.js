@@ -61,7 +61,8 @@ const checkUserExistsFromId = async (req, res, next) => {
 const validateUserUpdateData = async (req, res, next) => {
   const prevUser = await User.findById(req.user.id);
 
-  const { firstName, lastName, phone, username, email, isActive } = req.body;
+  const { firstName, lastName, phone, username, email, isActive, awards } =
+    req.body;
 
   const body = {
     firstName: firstName ?? prevUser.firstName,
@@ -70,6 +71,7 @@ const validateUserUpdateData = async (req, res, next) => {
     username: username ?? prevUser.username,
     email: email ?? prevUser.email,
     isActive: isActive ?? prevUser.isActive ?? true,
+    awards: awards ?? prevUser.awards,
   };
 
   const { error } = User.validatePatchBody(body);

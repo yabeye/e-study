@@ -7,8 +7,9 @@ import CustomError from '../common/CustomError.js';
 import { request } from 'express';
 
 const getAllQuestions = asyncErrorHandler(async (req, res, next) => {
+  console.log('Current user is ', req.user);
   let query = Question.find({
-    isActive: true,
+    // isActive: true,
   })
     .populate({
       path: 'askedBy',
@@ -18,7 +19,7 @@ const getAllQuestions = asyncErrorHandler(async (req, res, next) => {
     .populate({
       path: 'answers',
       model: 'Answer',
-      match: { isActive: true },
+      // match: { isActive: true },
     });
 
   const questions = await query;
@@ -36,7 +37,7 @@ const getAllQuestions = asyncErrorHandler(async (req, res, next) => {
 const getQuestion = asyncErrorHandler(async (req, res, next) => {
   let question = await Question.findOne({
     _id: req.question.id,
-    isActive: true,
+    // isActive: true,
   })
     .populate({
       path: 'askedBy',
@@ -51,7 +52,7 @@ const getQuestion = asyncErrorHandler(async (req, res, next) => {
     .populate({
       path: 'answers',
       model: 'Answer',
-      match: { isActive: true },
+      // match: { isActive: true },
     });
 
   const answers = await Answer.find({ question: req.question.id }).populate({
@@ -178,7 +179,8 @@ const updateQuestion = asyncErrorHandler(async (req, res, next) => {
 
 const deleteQuestion = asyncErrorHandler(async (req, res, next) => {
   const question = req.question;
-  await Question.deleteOne({ id: question.id });
+  console.log('Id is ');
+  await Question.deleteOne({ _id: question.id });
   return res.status(200).json({
     success: true,
     message: 'Question suspended successfully',
