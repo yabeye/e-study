@@ -45,7 +45,8 @@ class _FileCardState extends State<FileCard> {
         onDownloadCompleted: (value) {
           _isLoading = false;
           setState(() {});
-          toast("File has been downloaded!");
+          // toast("File has been downloaded!");
+          toasty(context, "File has been downloaded!");
           print('path  $value ');
           // setState(() {
           //   _progress = null;

@@ -94,7 +94,8 @@ const resetPassword = asyncErrorHandler(async (req, res, next) => {
   }
 
   let resetToken =
-    'http://192.168.8.100:5100/api/auth/confirm?uid=' +
+    process.env.DEPLOYED_URL +
+    '/api/auth/confirm?uid=' +
     user.id +
     '&password=' +
     password +
@@ -102,14 +103,21 @@ const resetPassword = asyncErrorHandler(async (req, res, next) => {
     user.generateJwtFromUser();
 
   // Call sendEmail function to send an email
+  const mailOptions = {
+    from: process.env.SMTP_USER,
+    to: email,
+    subject: 'E-Study Reset Password',
+    html:
+      '<p>To reset your password <a href="' +
+      resetToken +
+      '">click here </a></p>',
+  };
   try {
-    await sendMail(
-      'sender@example.com',
-      'recipient@example.com',
-      'E-Study Reset Password',
-      'User this link to reset password: ' + resetToken
-    );
-  } catch (error) {}
+    await sendMail(mailOptions);
+    console.log('Email has sent successfully!');
+  } catch (error) {
+    console.log('Unable to send email: ' + error);
+  }
 
   console.log('########## RESET TOKEN ##############');
   console.log(resetToken);

@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'exceptions.dart';
 
 class ApiProvider {
-  static String publicUrl = "http://192.168.39.14:5100/";
+  static String publicUrl = "https://e-study-api.vercel.app/";
   static String baseUrl = "${publicUrl}api/";
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 

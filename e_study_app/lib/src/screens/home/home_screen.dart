@@ -81,11 +81,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             CustomChips(
               name:
-                  "${Question.filterQuestions(allQuestions, "Natural Science").length} Natural",
+                  "${Question.filterQuestions(allQuestions, "Natural").length} Natural",
             ).paddingSymmetric(horizontal: 5),
             CustomChips(
               name:
-                  "${Question.filterQuestions(allQuestions, "Social Science").length} Social",
+                  "${Question.filterQuestions(allQuestions, "Social").length} Social",
             ).paddingSymmetric(horizontal: 5),
             CustomChips(
               name:

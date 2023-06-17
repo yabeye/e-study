@@ -1,8 +1,9 @@
 import express from 'express';
+const Grid = require('gridfs-stream');
 
 import FileModel from '../models/file.model.js';
 
-import path, { dirname } from 'path';
+import path from 'path';
 import fs from 'fs';
 
 // import { checkQuestionExist } from '../common/helpers/questions.helper';
@@ -18,7 +19,6 @@ import { fileURLToPath } from 'url';
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -32,7 +32,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // OPEN ROUTES
-router.get('/all/:id', [isValidId], async (req, res, next) => {
+router.get('/all/:id', [isValidId], async (req, res) => {
   const file = await FileModel.findById(req.params.id).populate({
     path: 'uploadedBy',
     model: 'User',
@@ -53,7 +53,7 @@ router.get('/all/:id', [isValidId], async (req, res, next) => {
     },
   });
 });
-router.get('/all', async (req, res, next) => {
+router.get('/all', async (req, res) => {
   //   const directoryPath = path.join(__dirname, 'public/uploads/images');
   //   fs.readdir(directoryPath, function (err, files) {
   //     if (err) {
@@ -110,7 +110,7 @@ router.get('/download', (req, res) => {
 router.use(checkAccessToRoute);
 router.use(checkBlock);
 
-router.post('/upload', [upload.single('file')], async (req, res, next) => {
+router.post('/upload', [upload.single('file')], async (req, res) => {
   const filePath = req.file.path;
   const { category, name } = req.body;
 

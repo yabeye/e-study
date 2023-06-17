@@ -34,15 +34,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   signUp() async {
-    // if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-    //   toasty(
-    //     context,
-    //     "Enter both email and password!",
-    //     textColor: Colors.red,
-    //   );
-    //   return;
-    // }
-
     try {
       await _authProvider.signUp(
         firstName: _firstNameController.text,
@@ -82,7 +73,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           children: [
             20.height,
             Text(
-              "Sing Up",
+              "Sign Up",
               style: boldTextStyle(size: 18),
             ),
             20.height,
@@ -96,7 +87,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 context,
                 labelText: "Firstname",
                 hintStyle: secondaryTextStyle(),
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.abc),
               ),
               onFieldSubmitted: (v) {
                 hideKeyboard(context);
@@ -113,7 +104,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 context,
                 labelText: "LastName",
                 hintStyle: secondaryTextStyle(),
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.abc),
               ),
               onFieldSubmitted: (v) {
                 hideKeyboard(context);
@@ -129,7 +120,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               decoration: inputDecoration(
                 context,
                 labelText: "Email",
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.email),
               ),
               onFieldSubmitted: (v) {
                 hideKeyboard(context);
@@ -146,7 +137,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 context,
                 labelText: "Username",
                 hintStyle: secondaryTextStyle(),
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.abc),
               ),
               onFieldSubmitted: (v) {
                 hideKeyboard(context);
@@ -163,7 +154,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 context,
                 labelText: "Password",
                 hintStyle: secondaryTextStyle(),
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.password),
               ),
               onFieldSubmitted: (v) {
                 hideKeyboard(context);
@@ -182,7 +173,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 context,
                 labelText: "Phone Number",
                 hintStyle: secondaryTextStyle(),
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.phone),
               ),
               onFieldSubmitted: (v) {
                 hideKeyboard(context);

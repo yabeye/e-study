@@ -122,7 +122,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
           ).visible(_isCategoryError),
           10.height,
           CommonDropDownComponent(
-            defaultValue: _selectedSubject,
+            // defaultValue: _selectedSubject,
             items: naturalCategories,
             placeholder: "Select Subject",
             callback: (v) {

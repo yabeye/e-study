@@ -92,7 +92,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   context,
                   hintText: "Email",
                   hintStyle: secondaryTextStyle(),
-                  prefixIcon: const Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.email),
                 ),
                 onFieldSubmitted: (v) {
                   hideKeyboard(context);
@@ -108,7 +108,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   context,
                   hintText: "New Password",
                   hintStyle: secondaryTextStyle(),
-                  prefixIcon: const Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.password),
                 ),
                 onFieldSubmitted: (v) {
                   hideKeyboard(context);

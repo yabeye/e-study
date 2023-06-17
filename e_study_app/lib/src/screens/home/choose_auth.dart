@@ -37,10 +37,10 @@ class _ChooseAuthState extends State<ChooseAuth> {
     return Scaffold(
       appBar: appBarWidget(
         '',
-        backWidget: const BackWidget(iconColor: primaryColor),
+        // backWidget: const BackWidget(iconColor: primaryColor),
         shadowColor: whiteColor,
         elevation: 0,
-        showBack: true,
+        showBack: false,
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -186,9 +186,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 decoration: inputDecoration(
                   context,
-                  hintText: "Username",
+                  hintText: "Email",
                   hintStyle: secondaryTextStyle(),
-                  prefixIcon: const Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.email),
                 ),
                 onFieldSubmitted: (v) {
                   hideKeyboard(context);
@@ -204,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   context,
                   hintText: "Password",
                   hintStyle: secondaryTextStyle(),
-                  prefixIcon: const Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.password),
                 ),
                 onFieldSubmitted: (v) {
                   hideKeyboard(context);

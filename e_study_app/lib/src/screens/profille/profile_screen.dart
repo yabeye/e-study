@@ -1,6 +1,7 @@
 import 'package:e_study_app/src/common/extensions/string_extensions.dart';
 import 'package:e_study_app/src/helpers/ui_helpers.dart';
 import 'package:e_study_app/src/providers/auth_provider.dart';
+import 'package:e_study_app/src/providers/question_provider.dart';
 import 'package:e_study_app/src/screens/profille/edit_profile_screen.dart';
 import 'package:e_study_app/src/screens/splash_screeen.dart';
 import 'package:e_study_app/src/widgets/common_ui.dart';
@@ -23,11 +24,13 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   int _tabIndex = 0;
   late final AuthProvider _authProvider;
+  late final QuestionProvider _questionProvider;
   bool _isAuth = false;
 
   @override
   void initState() {
     _authProvider = context.read<AuthProvider>();
+    _questionProvider = context.read<QuestionProvider>();
     _isAuth = _authProvider.isLoggedIn;
     super.initState();
   }
@@ -228,7 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         },
                       ).expand(),
                       _buildLabelContainer(
-                        "Files (0)",
+                        "Files (${_questionProvider.files.where((q) => q.uploadedBy.id == (_authProvider.currentUser == null ? "abc" : _authProvider.currentUser!.id)).length})",
                         _tabIndex == 2,
                         () {
                           _tabIndex = 2;

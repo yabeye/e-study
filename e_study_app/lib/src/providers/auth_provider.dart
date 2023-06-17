@@ -93,7 +93,7 @@ class AuthProvider extends ChangeNotifier {
     });
 
     notifyListeners();
-    await login(email: email, password: password);
+    // await login(email: email, password: password);
   }
 
   Future<void> resetPassword({

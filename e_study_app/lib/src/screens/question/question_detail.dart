@@ -18,6 +18,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/question_provider.dart';
 import '../../theme/theme.dart';
 import '../home/choose_auth.dart';
+import '../search/hashtag_result.dart';
 
 class QuestionDetail extends StatefulWidget {
   QuestionDetail({super.key, required this.question});
@@ -145,8 +146,14 @@ class _QuestionDetailState extends State<QuestionDetail> {
   @override
   Widget build(BuildContext context) {
     widget.question.answers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
     final askedBy = question.askedBy;
+    bool isOwner = askedBy.id ==
+        (_authProvider.currentUser == null
+            ? 'abc'
+            : _authProvider.currentUser!.id);
+
+    bool isAuth = _authProvider.currentUser != null;
+
     return Scaffold(
       appBar: appBar(
         title: "Question",
@@ -180,7 +187,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
                 "Report",
                 style: TextStyle(color: whiteColor, fontSize: 12),
               ),
-            ),
+            ).visible(isAuth),
             IconButton(
               onPressed: () => confirm(
                 context,
@@ -201,7 +208,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
                 Icons.delete,
                 color: Colors.red,
               ),
-            ).visible(askedBy.id == _authProvider.currentUser!.id)
+            ).visible(isOwner)
           ],
         ),
         showBack: true,
@@ -228,16 +235,43 @@ class _QuestionDetailState extends State<QuestionDetail> {
         SliverToBoxAdapter(
           child: 15.height,
         ),
+        // SliverToBoxAdapter(
+        //   child: question.hashTags.isNotEmpty
+        //       ? TextScroll(
+        //           question.hashTags.map((e) => "#$e").toList().join(" "),
+        //           velocity: const Velocity(pixelsPerSecond: Offset(40, 0)),
+        //           style: secondaryTextStyle(
+        //             backgroundColor: Colors.grey.shade200,
+        //             color: Colors.black,
+        //           ),
+        //           fadedBorderWidth: .5,
+        //         )
+        //       : Container(),
+        // ),
         SliverToBoxAdapter(
           child: question.hashTags.isNotEmpty
-              ? TextScroll(
-                  question.hashTags.map((e) => "#$e").toList().join(" "),
-                  velocity: const Velocity(pixelsPerSecond: Offset(40, 0)),
-                  style: secondaryTextStyle(
-                    backgroundColor: Colors.grey.shade200,
-                    color: Colors.black,
-                  ),
-                  fadedBorderWidth: .5,
+              ? SizedBox(
+                  height: 40,
+                  width: context.width() * .9,
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: question.hashTags.length,
+                      itemBuilder: (c, i) {
+                        return InkWell(
+                          onTap: () {
+                            HashTagResult(
+                              hashKey: question.hashTags[i],
+                            ).launch(context, isNewTask: false);
+                          },
+                          child: Center(
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                ),
+                                child: Text("#${question.hashTags[i]}")),
+                          ).paddingSymmetric(horizontal: 8),
+                        );
+                      }),
                 )
               : Container(),
         ),
@@ -245,7 +279,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
           child: 15.height,
         ),
         SliverToBoxAdapter(
-          child: askedBy.id != _authProvider.currentUser!.id
+          child: !(isAuth && isOwner)
               ? null
               : Align(
                   alignment: Alignment.centerRight,
@@ -330,7 +364,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
                     style: secondaryTextStyle(),
                   ),
                 ],
-              ),
+              ).visible(isAuth),
             ],
           ),
         ),
@@ -374,7 +408,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
               ),
               5.height,
             ],
-          ),
+          ).visible(isAuth),
         ),
         SliverToBoxAdapter(
           child: Column(
@@ -398,7 +432,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
           ),
         ),
         SliverToBoxAdapter(
-          child: !_isAuth
+          child: !isAuth
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
