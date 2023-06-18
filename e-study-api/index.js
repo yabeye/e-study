@@ -7,7 +7,8 @@ import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import ip from 'ip';
 
-connectMongoDB();
+// connectMongoDB();
+import './src/common/helpers/database.helper.js';
 import './src/models/question.model.js';
 import './src/models/answer.model.js';
 // import './src/models/user.model.js';
@@ -16,7 +17,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 import router from './src/routes/index.routes.js';
-import connectMongoDB from './src/common/helpers/database.helper.js';
+// import connectMongoDB from './src/common/helpers/database.helper.js';
 import { errorHandler } from './src/middlewares/error.handler.js';
 import { INVALID_ROUTE } from './src/common/constants.js';
 

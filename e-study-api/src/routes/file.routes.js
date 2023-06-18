@@ -1,5 +1,4 @@
 import express from 'express';
-const Grid = require('gridfs-stream');
 
 import FileModel from '../models/file.model.js';
 
@@ -10,25 +9,17 @@ import fs from 'fs';
 // import { isValidId } from '../middlewares/validation.middleware';
 
 import multer from 'multer';
+import gfs from '../common/helpers/database.helper.js';
+
 import {
   checkAccessToRoute,
   checkBlock,
 } from '../middlewares/auth.middleware.js';
 import { isValidId } from '../middlewares/validation.middleware.js';
-import { fileURLToPath } from 'url';
 
 const router = express.Router();
-const __filename = fileURLToPath(import.meta.url);
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'public/uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
-
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // OPEN ROUTES
@@ -111,23 +102,36 @@ router.use(checkAccessToRoute);
 router.use(checkBlock);
 
 router.post('/upload', [upload.single('file')], async (req, res) => {
-  const filePath = req.file.path;
-  const { category, name } = req.body;
+  // Get the file from the request
+  const file = req.file;
 
-  const newFile = new FileModel({
-    category: category,
-    name: name,
-    path: filePath,
-    uploadedBy: req.user.id,
+  // Create a writable stream for storing the file in GridFS
+  const writeStream = gfs.createWriteStream({
+    filename: file.originalname,
   });
 
-  await newFile.save();
+  // Pipe the file data into the GridFS stream
+  const readStream = new stream.PassThrough();
+  readStream.end(file.buffer);
+  readStream.pipe(writeStream);
 
-  return res.send({
-    message: 'File uploaded successfully!',
-    data: {
-      file: newFile,
-    },
+  // When the upload is complete, send a response with the file ID
+  writeStream.on('close', async (file) => {
+    const { category, name } = req.body;
+    const newFile = new FileModel({
+      category: category,
+      name: 'file - ' + name,
+      path: file._id,
+      uploadedBy: req.user.id,
+    });
+    await newFile.save();
+
+    return res.send({
+      message: 'File uploaded successfully!',
+      data: {
+        file: newFile,
+      },
+    });
   });
 });
 

@@ -2,6 +2,7 @@ import 'package:e_study_app/src/providers/auth_provider.dart';
 import 'package:e_study_app/src/providers/question_provider.dart';
 import 'package:e_study_app/src/screens/splash_screeen.dart';
 import 'package:e_study_app/src/theme/theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:e_study_app/src/screens/main_screen.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,12 @@ import 'package:provider/provider.dart';
 void main() {
   // Initialize stuff
   Provider.debugCheckInvalidValueType = null;
+
+  if (kReleaseMode) {
+    debugPrint = (String? message, {int? wrapWidth}) {};
+  }
+  print("object");
+
   runApp(const MyApp());
 }
 

@@ -81,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: const Icon(
                         Icons.logout,
                         color: Colors.white,
-                      )),
+                      )).paddingRight(16),
                 ]),
       body: !_isAuth
           ? Center(

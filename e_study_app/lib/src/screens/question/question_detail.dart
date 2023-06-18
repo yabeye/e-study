@@ -19,6 +19,7 @@ import '../../providers/question_provider.dart';
 import '../../theme/theme.dart';
 import '../home/choose_auth.dart';
 import '../search/hashtag_result.dart';
+import '../splash_screeen.dart';
 
 class QuestionDetail extends StatefulWidget {
   QuestionDetail({super.key, required this.question});
@@ -88,6 +89,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
     } on BadRequestException catch (e) {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
+      _authProvider.clear();
+      const SplashScreen().launch(context, isNewTask: true);
       toasty(context, e.message);
     } on FetchDataException catch (e) {
       toasty(context, e.message);
@@ -111,6 +114,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
     } on BadRequestException catch (e) {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
+      _authProvider.clear();
+      const SplashScreen().launch(context, isNewTask: true);
       toasty(context, e.message);
     } on FetchDataException catch (e) {
       toasty(context, e.message);
@@ -133,6 +138,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
     } on BadRequestException catch (e) {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
+      _authProvider.clear();
+      const SplashScreen().launch(context, isNewTask: true);
       toasty(context, e.message);
     } on FetchDataException catch (e) {
       toasty(context, e.message);

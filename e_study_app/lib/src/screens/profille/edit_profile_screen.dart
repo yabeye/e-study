@@ -53,6 +53,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
       toasty(context, e.message);
+      _authProvider.clear();
+      const SplashScreen().launch(context, isNewTask: true);
     } on FetchDataException catch (e) {
       toasty(context, e.message);
     } catch (e) {

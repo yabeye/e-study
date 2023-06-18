@@ -27,6 +27,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +36,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   signUp() async {
+    _isLoading = true;
+    setState(() {});
     try {
       await _authProvider.signUp(
         firstName: _firstNameController.text,
@@ -49,12 +53,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } on BadRequestException catch (e) {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
+      _authProvider.clear();
+      const SplashScreen().launch(context, isNewTask: true);
       toasty(context, e.message);
     } on FetchDataException catch (e) {
       toasty(context, e.message);
     } catch (e) {
       toasty(context, e.toString());
       print("ERR SIGUP: ${e.toString()}");
+    } finally {
+      _isLoading = false;
+      setState(() {});
     }
   }
 
@@ -181,8 +190,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             20.height,
             AppButton(
-              onTap: signUp,
-              text: 'Signup',
+              onTap: _isLoading ? null : signUp,
+              text: _isLoading ? '...' : 'Signup',
+              disabledColor: loadingColor,
               textColor: whiteColor,
               color: primaryColor,
               width: context.width() * .9,

@@ -1,11 +1,14 @@
 import 'package:e_study_app/src/api/exceptions.dart';
 import 'package:e_study_app/src/common/constants.dart';
+import 'package:e_study_app/src/providers/auth_provider.dart';
 import 'package:e_study_app/src/providers/question_provider.dart';
 import 'package:e_study_app/src/theme/theme.dart';
 import 'package:e_study_app/src/widgets/common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
+
+import '../splash_screeen.dart';
 
 class NewQuestionScreen extends StatefulWidget {
   const NewQuestionScreen({super.key});
@@ -62,6 +65,9 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
       toasty(context, e.message);
+      final _authProvider = Provider.of<AuthProvider>(context);
+      _authProvider.clear();
+      const SplashScreen().launch(context, isNewTask: true);
     } on FetchDataException catch (e) {
       toasty(context, e.message);
     } catch (e) {

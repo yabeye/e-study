@@ -21,12 +21,13 @@ const checkAccessToRoute = async (req, res, next) => {
     return next(unAuthorizedError);
   }
   const token = getAccessTokenFromHeader(req);
-
   jwt.verify(token, JWT_SECRET_KEY, async (err, decoded) => {
     if (err) {
       return next(unAuthorizedError);
     }
+    console.log('decoded user is ', decoded);
     req.user = await User.findById(decoded.id);
+    console.log('Finally user is  ', req.user);
     if (!req.user) {
       return next(new CustomError('User not found', 400));
     }

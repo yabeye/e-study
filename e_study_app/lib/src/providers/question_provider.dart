@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:e_study_app/src/models/answer.model.dart';
 import 'package:e_study_app/src/models/file_model.dart';
 import 'package:e_study_app/src/models/question.model.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 import '../api/api_provider.dart';
 
@@ -188,6 +191,23 @@ class QuestionProvider extends ChangeNotifier {
     }
   }
 
+  Future<String> downloadFile({String fileName = ""}) async {
+    // final response = await _provider.get("allFiles/$fileName");
+    final response =
+        await http.get(Uri.parse("${ApiProvider.baseUrl}/allFiles/$fileName"));
+    final bytes = response.bodyBytes;
+
+    final dir = await getApplicationDocumentsDirectory();
+    final filePath = '${dir.path}/$fileName';
+
+    File file = File(filePath);
+    await file.writeAsBytes(bytes);
+
+    print('File downloaded to $filePath');
+
+    return filePath;
+  }
+
   // // Function for downloading a file
   // Future<void> downloadFile(
   //     {Stri}) async {
@@ -261,6 +281,6 @@ class QuestionProvider extends ChangeNotifier {
   void clear() {
     questions = [];
     files = [];
-    notifyListeners();
+    // notifyListeners();
   }
 }

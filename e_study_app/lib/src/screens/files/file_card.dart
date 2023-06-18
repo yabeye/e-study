@@ -34,29 +34,41 @@ class _FileCardState extends State<FileCard> {
   }
 
   void _downloadFile() async {
-    FileDownloader.downloadFile(
-        url:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Npm-logo.svg/1200px-Npm-logo.svg.png",
-        // url: "${ApiProvider.publicUrl}uploads/images/logo.png",
-        onProgress: (name, progress) {
-          _isLoading = true;
-          setState(() {});
-        },
-        onDownloadCompleted: (value) {
-          _isLoading = false;
-          setState(() {});
-          // toast("File has been downloaded!");
-          toasty(context, "File has been downloaded!");
-          print('path  $value ');
-          // setState(() {
-          //   _progress = null;
-          // });
-        },
-        onDownloadError: (errorMessage) {
-          _isLoading = false;
-          setState(() {});
-          toast(errorMessage);
-        });
+    _isLoading = true;
+    setState(() {});
+    try {
+      final filePath = await _questionProvider.downloadFile(
+          fileName: widget.currentFile.path);
+      toasty(context, 'File downloaded to $filePath');
+    } catch (e) {
+      toasty(context, 'Unable to download a file!');
+      print(e.toString());
+    }
+    _isLoading = false;
+    setState(() {});
+    // FileDownloader.downloadFile(
+    //     url:
+    //         "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Npm-logo.svg/1200px-Npm-logo.svg.png",
+    //     // url: "${ApiProvider.publicUrl}uploads/images/logo.png",
+    //     onProgress: (name, progress) {
+    //       _isLoading = true;
+    //       setState(() {});
+    //     },
+    //     onDownloadCompleted: (value) {
+    //       _isLoading = false;
+    //       setState(() {});
+    //       // toast("File has been downloaded!");
+    //       toasty(context, "File has been downloaded!");
+    //       print('path  $value ');
+    //       // setState(() {
+    //       //   _progress = null;
+    //       // });
+    //     },
+    //     onDownloadError: (errorMessage) {
+    //       _isLoading = false;
+    //       setState(() {});
+    //       toast(errorMessage);
+    //     });
 
     // try {
     //   await _questionProvider.downloadFile();

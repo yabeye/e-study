@@ -7,6 +7,7 @@ import '../../common/constants.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme/theme.dart';
 import '../../widgets/common_ui.dart';
+import '../splash_screeen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({
@@ -21,6 +22,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   late final AuthProvider _authProvider;
   late final TextEditingController _emailController;
   late final TextEditingController _newPassword;
+
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -41,6 +44,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     // _emailController.text = "someemail@gmail.com";
     // _newPassword.text = "";
 
+    _isLoading = true;
+    setState(() {});
     try {
       await _authProvider.resetPassword(
         email: _emailController.text,
@@ -54,10 +59,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
       toasty(context, e.message);
+      _authProvider.clear();
+      const SplashScreen().launch(context, isNewTask: true);
     } on FetchDataException catch (e) {
       toasty(context, e.message);
     } catch (e) {
       toasty(context, e.toString());
+    } finally {
+      _isLoading = false;
+      setState(() {});
     }
   }
 
@@ -116,8 +126,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
               20.height,
               AppButton(
-                onTap: login,
-                text: 'Reset Password',
+                onTap: _isLoading ? null : login,
+                text: _isLoading ? '...' : 'Reset Password',
+                disabledColor: loadingColor,
                 textColor: whiteColor,
                 color: primaryColor,
                 width: context.width() * .9,

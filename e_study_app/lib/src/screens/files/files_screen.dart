@@ -44,7 +44,7 @@ class _FilesScreenState extends State<FilesScreen> {
     filteredFiles = allFiles;
     afterBuildCreated(() async {
       await fetchAllQuestions();
-      _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      _timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
         await fetchAllQuestions();
       });
     });

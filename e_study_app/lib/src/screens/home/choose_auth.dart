@@ -109,6 +109,8 @@ class _LoginScreenState extends State<LoginScreen> {
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
 
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -139,6 +141,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
+      _isLoading = true;
+      setState(() {});
       await _authProvider.login(
         email: _emailController.text,
         password: _passwordController.text,
@@ -149,11 +153,16 @@ class _LoginScreenState extends State<LoginScreen> {
     } on BadRequestException catch (e) {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
+      _authProvider.clear();
+      const SplashScreen().launch(context, isNewTask: true);
       toasty(context, e.message);
     } on FetchDataException catch (e) {
       toasty(context, e.message);
     } catch (e) {
       toasty(context, e.toString());
+    } finally {
+      _isLoading = false;
+      setState(() {});
     }
   }
 
@@ -212,8 +221,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               20.height,
               AppButton(
-                onTap: login,
-                text: 'Login',
+                onTap: _isLoading ? null : login,
+                disabledColor: loadingColor,
+                text: _isLoading ? "..." : 'Login',
                 textColor: whiteColor,
                 color: primaryColor,
                 width: context.width() * .9,
