@@ -24,6 +24,8 @@ class _NewFileScreenState extends State<NewFileScreen> {
   late final TextEditingController _descriptionController;
   bool _isCategoryError = false;
 
+  bool _isLoading = false;
+
   String _selectedCategory = "Natural";
   PlatformFile? file;
 
@@ -57,6 +59,8 @@ class _NewFileScreenState extends State<NewFileScreen> {
   }
 
   _uploadFile() async {
+    _isLoading = true;
+    setState(() {});
     try {
       if (file == null) {
         toast("Select a file!");
@@ -69,7 +73,11 @@ class _NewFileScreenState extends State<NewFileScreen> {
       );
       context.pop();
       toasty(context, "File uploaded successfully!");
-    } catch (e) {}
+    } catch (e) {
+    } finally {
+      _isLoading = false;
+      setState(() {});
+    }
   }
 
   @override
@@ -154,7 +162,8 @@ class _NewFileScreenState extends State<NewFileScreen> {
             ),
             50.height,
             AppButton(
-              onTap: _uploadFile,
+              onTap: _isLoading ? null : _uploadFile,
+              disabledColor: loadingColor,
               text: "Upload",
               textColor: whiteColor,
               color: primaryColor,

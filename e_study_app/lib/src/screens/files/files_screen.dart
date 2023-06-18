@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:e_study_app/src/providers/auth_provider.dart';
 import 'package:e_study_app/src/providers/question_provider.dart';
 import 'package:e_study_app/src/screens/files/file_card.dart';
 import 'package:flutter/material.dart';
@@ -23,15 +24,20 @@ class FilesScreen extends StatefulWidget {
 
 class _FilesScreenState extends State<FilesScreen> {
   late final QuestionProvider _questionProvider;
+  late final AuthProvider _authProvider;
+
   List<FileModel> allFiles = [];
   List<FileModel> filteredFiles = [];
   String _filterKey = "All";
 
   Timer? _timer;
 
+  Timer? _timer2;
+
   @override
   void dispose() {
     _timer!.cancel();
+    _timer2!.cancel();
     _questionProvider.dispose();
     super.dispose();
   }
@@ -40,12 +46,17 @@ class _FilesScreenState extends State<FilesScreen> {
   void initState() {
     super.initState();
     _questionProvider = context.read<QuestionProvider>();
+    _authProvider = context.read<AuthProvider>();
+
     allFiles = _questionProvider.files;
     filteredFiles = allFiles;
     afterBuildCreated(() async {
       await fetchAllQuestions();
-      _timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+      _timer = Timer.periodic(const Duration(seconds: 30), (timer) async {
         await fetchAllQuestions();
+      });
+      _timer2 = Timer.periodic(const Duration(seconds: 30), (timer) async {
+        await _authProvider.refreshUser();
       });
     });
   }
@@ -99,25 +110,33 @@ class _FilesScreenState extends State<FilesScreen> {
           ),
         ),
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: 15.height,
-          ),
-          SliverToBoxAdapter(child: 10.height),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (_, index) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: FileCard(
-                  currentFile: allFiles[index],
-                ),
-              ),
-              childCount: filteredFiles.length,
-              // childCount: _availableHandyMen.length,
+      body: RefreshIndicator(
+        onRefresh: fetchAllQuestions,
+        child: CustomScrollView(
+          slivers: [
+            // SliverToBoxAdapter(
+            //   child: filteredFiles.isNotEmpty
+            //       ? Container()
+            //       : const LinearProgressIndicator(),
+            // ),
+            SliverToBoxAdapter(
+              child: 15.height,
             ),
-          ),
-        ],
+            SliverToBoxAdapter(child: 10.height),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (_, index) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: FileCard(
+                    currentFile: allFiles[index],
+                  ),
+                ),
+                childCount: filteredFiles.length,
+                // childCount: _availableHandyMen.length,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

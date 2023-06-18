@@ -18,12 +18,10 @@ class AuthProvider extends ChangeNotifier {
   String emailStore = "";
   String passwordStore = "";
 
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
   get isLoggedIn => token != null;
 
   checkAuth() async {
-    final SharedPreferences pref = await _prefs;
+    final SharedPreferences pref = await ApiProvider.prefs;
 
     // debugPrint("==> ${jsonDecode(pref.get('user').toString())}");
     // currentUser = User.fromJson(jsonDecode(pref.get('user').toString()));
@@ -43,11 +41,25 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  refreshUser() async {
+    final SharedPreferences pref = await ApiProvider.prefs;
+    String email = (pref.getString('email')) ?? "";
+    String password = (pref.getString('password')) ?? "";
+
+    print("Email => ${email} and password: ${password}");
+
+    String token = (pref.getString('token')) ?? "";
+    debugPrint("Password=> $token");
+
+    await login(email: email, password: password);
+    notifyListeners();
+  }
+
   Future<void> login({
     required String email,
     required String password,
   }) async {
-    final SharedPreferences pref = await _prefs;
+    final SharedPreferences pref = await ApiProvider.prefs;
     await pref.setString('email', email);
     await pref.setString('password', password);
 
@@ -109,10 +121,8 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<User?> getUser(String id) async {
-    print("START: ");
     final response = await _provider.get("users/$id");
     final resQuestions = response['data']['user'];
-    print("REq Questioon: ${resQuestions}");
     if (resQuestions == null) return null;
 
     return User.fromJson(resQuestions);
@@ -124,18 +134,17 @@ class AuthProvider extends ChangeNotifier {
     required String lastName,
     required String username,
   }) async {
-    print("START: ");
     final response = await _provider.patch("users", {
       "firstName": firstName,
       "lastName": lastName,
       "username": username,
     });
     final resQuestions = response['data']['updatedUser'];
-    print("REq Questioon: ${resQuestions}");
     if (resQuestions == null) return null;
 
     currentUser = User.fromJson(resQuestions);
-    final SharedPreferences pref = await _prefs;
+
+    final SharedPreferences pref = await ApiProvider.prefs;
     await pref.setString('user', jsonEncode(currentUser));
 
     notifyListeners();
@@ -150,7 +159,7 @@ class AuthProvider extends ChangeNotifier {
     currentUser = null;
     token = null;
 
-    final SharedPreferences pref = await _prefs;
+    final SharedPreferences pref = await ApiProvider.prefs;
     pref.clear();
 
     notifyListeners();

@@ -29,6 +29,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +42,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   _updateProfile() async {
+    _isLoading = true;
+    setState(() {});
+
     try {
       await _authProvider.updateUser(
         firstName: _firstNameController.text,
@@ -47,8 +52,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         username: _usernameController.text,
       );
 
+      await _authProvider.refreshUser();
+
       // ignore: use_build_context_synchronously
       const SplashScreen().launch(context, isNewTask: true);
+      // ignore: use_build_context_synchronously
+      // context.pop();
     } on BadRequestException catch (e) {
       toasty(context, e.message);
     } on UnAuthorizedException catch (e) {
@@ -60,6 +69,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } catch (e) {
       toasty(context, e.toString());
       print("ERR SIGUP: ${e.toString()}");
+    } finally {
+      _isLoading = false;
+      setState(() {});
     }
   }
 
@@ -134,7 +146,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             20.height,
             AppButton(
-              onTap: _updateProfile,
+              onTap: _isLoading ? null : _updateProfile,
+              disabledColor: loadingColor,
               text: 'Update',
               textColor: whiteColor,
               color: primaryColor,

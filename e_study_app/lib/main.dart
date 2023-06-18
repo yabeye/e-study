@@ -14,7 +14,6 @@ void main() {
   if (kReleaseMode) {
     debugPrint = (String? message, {int? wrapWidth}) {};
   }
-  print("object");
 
   runApp(const MyApp());
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../common/constants.dart';
 
@@ -56,4 +57,11 @@ Future<void> confirm(
       ).paddingSymmetric(horizontal: 16, vertical: 24);
     },
   );
+}
+
+Future<void> appLaunchUrl(String url) async {
+  if (!await launchUrl(Uri.parse(url))) {
+    // throw Exception('Could not launch $url');
+    toast("Unable to launch $url");
+  }
 }

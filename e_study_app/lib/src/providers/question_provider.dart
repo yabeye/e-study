@@ -97,17 +97,25 @@ class QuestionProvider extends ChangeNotifier {
     var resQuestions = response['data']['questions'];
     clear();
     for (int i = 0; i < resQuestions.length; i++) {
-      final q = Question.fromJson(resQuestions[i]);
-      if (q.isActive == true) {
-        questions.add(q);
-      }
+      debugPrint("ERR at ${resQuestions[i]["_id"]}");
+      try {
+        final q = Question.fromJson(resQuestions[i]);
+        if (q.isActive == true) {
+          questions.add(q);
+        }
+      } catch (e) {}
     }
 
     response = await _provider.get("files/all");
     resQuestions = response['data']['files'];
 
+    files = [];
     for (int i = 0; i < resQuestions.length; i++) {
-      files.add(FileModel.fromJson(resQuestions[i]));
+      try {
+        files.add(FileModel.fromJson(resQuestions[i]));
+      } catch (e) {
+        debugPrint("File error at : ${resQuestions[i]['_id']}");
+      }
     }
     files.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     notifyListeners();
@@ -171,7 +179,10 @@ class QuestionProvider extends ChangeNotifier {
     final SharedPreferences pref = await _prefs;
     String? token = (pref.getString('token'));
     String url = '$baseUrl/files/upload';
-    var request = http.MultipartRequest('POST', Uri.parse(url));
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse("https://e-study-api.vercel.app/api/files/upload"),
+    );
     request.files
         .add(await http.MultipartFile.fromPath('file', file.path ?? ""));
     request.headers.addAll({'Authorization': 'Bearer ${token ?? ""}'});
@@ -191,21 +202,31 @@ class QuestionProvider extends ChangeNotifier {
     }
   }
 
-  Future<String> downloadFile({String fileName = ""}) async {
+  Future<File> downloadFile({String fileName = "", String path = ""}) async {
     // final response = await _provider.get("allFiles/$fileName");
     final response =
         await http.get(Uri.parse("${ApiProvider.baseUrl}/allFiles/$fileName"));
     final bytes = response.bodyBytes;
+    print("Bytes are ${bytes}");
 
-    final dir = await getApplicationDocumentsDirectory();
-    final filePath = '${dir.path}/$fileName';
+    // final dir = await getApplicationDocumentsDirectory();
+    final filePath = path;
 
     File file = File(filePath);
     await file.writeAsBytes(bytes);
 
+    final expectedSize = response.headers['content-length'];
+    final actualSize = await file.length();
+    if (expectedSize != null && actualSize != int.parse(expectedSize)) {
+      print('Downloaded file size does not match expected size.');
+      // return null;
+    } else {
+      print("EQUAL! Actual size=> ${actualSize}");
+    }
+
     print('File downloaded to $filePath');
 
-    return filePath;
+    return file;
   }
 
   // // Function for downloading a file

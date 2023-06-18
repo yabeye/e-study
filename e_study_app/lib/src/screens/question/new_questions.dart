@@ -219,7 +219,7 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
                   ),
                   decoration: inputDecoration(
                     context,
-                    hintText: "Hash Tags(Optional) Comma Septate",
+                    hintText: "Hash Tags Comma Septate",
                     hintStyle: secondaryTextStyle(),
                   ),
                   onFieldSubmitted: (v) {

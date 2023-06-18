@@ -408,8 +408,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
               Align(
                 alignment: Alignment.centerRight,
                 child: AppButton(
-                  onTap: addComment,
-                  text: "Add Comment",
+                  onTap: _isLoading ? null : addComment,
+                  text: _isLoading ? "..." : "Add Comment",
                   textStyle: const TextStyle(),
                 ),
               ),
@@ -491,7 +491,8 @@ class _QuestionDetailState extends State<QuestionDetail> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         AppButton(
-                          onTap: _answerQuestion,
+                          onTap: _isLoading ? null : _answerQuestion,
+                          disabledColor: loadingColor,
                           text: 'Add Answer',
                           textColor: whiteColor,
                           color: primaryColor,

@@ -9,7 +9,7 @@ import 'exceptions.dart';
 class ApiProvider {
   static String publicUrl = "https://e-study-api.vercel.app/";
   static String baseUrl = "${publicUrl}api/";
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  static Future<SharedPreferences> prefs = SharedPreferences.getInstance();
 
   Future<dynamic> get(String url) async {
     var responseJson;
@@ -30,7 +30,7 @@ class ApiProvider {
   ) async {
     var responseJson;
     try {
-      final SharedPreferences pref = await _prefs;
+      final SharedPreferences pref = await prefs;
       String? token = (pref.getString('token'));
       // print("Token sis $token");
 
@@ -50,8 +50,9 @@ class ApiProvider {
   Future<dynamic> patch(String url, Object? body) async {
     var responseJson;
     try {
-      final SharedPreferences pref = await _prefs;
+      final SharedPreferences pref = await prefs;
       String? token = (pref.getString('token'));
+      debugPrint("Path token is:  ${token}");
 
       final completeUri = Uri.parse(baseUrl + url);
 
@@ -60,7 +61,6 @@ class ApiProvider {
         'Content-Type': 'application/json',
         'authorization': "Bearer ${token ?? ""}",
       });
-      print("REsponse: ${response.body}");
       responseJson = _response(response);
     } on FetchDataException {
       throw FetchDataException('No Internet connection');
@@ -71,7 +71,7 @@ class ApiProvider {
   Future<dynamic> delete(String url) async {
     var responseJson;
     try {
-      final SharedPreferences pref = await _prefs;
+      final SharedPreferences pref = await prefs;
       String? token = (pref.getString('token'));
 
       final completeUri = Uri.parse(baseUrl + url);
@@ -89,12 +89,11 @@ class ApiProvider {
 
   dynamic _response(http.Response response) {
     var responseJson = json.decode(response.body.toString());
-    debugPrint("$responseJson");
+
     switch (response.statusCode) {
       case 200:
       case 201:
         var responseJson = json.decode(response.body.toString());
-        debugPrint("$responseJson");
         return responseJson;
       case 400:
         var responseJson = json.decode(response.body.toString());

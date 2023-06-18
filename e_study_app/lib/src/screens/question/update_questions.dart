@@ -244,6 +244,7 @@ class _UpdateQuestionState extends State<UpdateQuestion> {
                 AppButton(
                   onTap: _isLoading ? null : updateQuestion,
                   text: "Update Question",
+                  disabledColor: loadingColor,
                   textColor: whiteColor,
                   color: primaryColor,
                   width: context.width(),

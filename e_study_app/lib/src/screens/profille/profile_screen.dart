@@ -118,144 +118,150 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             )
-          : CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(child: 10.height),
-                SliverToBoxAdapter(
-                    child: Column(
-                  children: [
-                    Text(
-                      "Badge(s) Awarded",
-                      style: primaryTextStyle(),
+          : RefreshIndicator(
+              onRefresh: () async => _authProvider.refreshUser(),
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(child: 10.height),
+                  SliverToBoxAdapter(
+                      child: Column(
+                    children: [
+                      Text(
+                        "Badge(s) Awarded",
+                        style: primaryTextStyle(),
+                      ),
+                      5.height,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          svgBasic
+                              .svgImage(size: 32, color: Colors.grey)
+                              .visible((_authProvider.currentUser!.awards ?? [])
+                                  .contains("B")),
+                          svgSilver
+                              .svgImage(
+                                size: 32,
+                                color: Colors.grey,
+                              )
+                              .visible((_authProvider.currentUser!.awards ?? [])
+                                  .contains("S")),
+                          svgGold
+                              .svgImage(
+                                size: 32,
+                              )
+                              .visible((_authProvider.currentUser!.awards ?? [])
+                                  .contains("G")),
+                        ],
+                      ),
+                    ],
+                  )),
+                  SliverToBoxAdapter(child: 20.height),
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      child: _authProvider.currentUser!.profilePic == null
+                          ? Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 2),
+                              decoration: BoxDecoration(
+                                color: white,
+                                borderRadius: radius(100),
+                              ),
+                              child: SvgPicture.asset(
+                                svgAvatar,
+                                color: primaryColor,
+                                width: 100,
+                                height: 100,
+                              ),
+                            )
+                          : CachedImageWidget(
+                              url: _authProvider.currentUser!.profilePic!,
+                              height: 50,
+                            ),
                     ),
-                    5.height,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      mainAxisSize: MainAxisSize.min,
+                  ),
+                  SliverToBoxAdapter(child: 10.height),
+                  SliverToBoxAdapter(
+                    child: Text(
+                      "${_authProvider.currentUser!.firstName} ${_authProvider.currentUser!.lastName}",
+                      style: boldTextStyle(),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Text(
+                      "@${_authProvider.currentUser!.username}",
+                      style: secondaryTextStyle(),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  // SliverToBoxAdapter(
+                  //   child: Text(
+                  //     "Bio: Grade 10 Student from Addis Ababa",
+                  //     style: secondaryTextStyle(),
+                  //     textAlign: TextAlign.center,
+                  //   ),
+                  // ),
+                  SliverToBoxAdapter(
+                    child: TextButton.icon(
+                      onPressed: () async {
+                        // await _authProvider.refreshUser();
+                        const EditProfileScreen().launch(
+                          context,
+                          isNewTask: false,
+                        );
+                      },
+                      icon: const Icon(Icons.edit),
+                      label: const Text("Edit Profile"),
+                    ),
+                  ),
+
+                  SliverToBoxAdapter(
+                    child: Row(
                       children: [
-                        svgBasic.svgImage(size: 32, color: Colors.grey).visible(
-                            (_authProvider.currentUser!.awards ?? [])
-                                .contains("B")),
-                        svgSilver
-                            .svgImage(
-                              size: 32,
-                              color: Colors.grey,
-                            )
-                            .visible((_authProvider.currentUser!.awards ?? [])
-                                .contains("S")),
-                        svgGold
-                            .svgImage(
-                              size: 32,
-                            )
-                            .visible((_authProvider.currentUser!.awards ?? [])
-                                .contains("G")),
+                        _buildLabelContainer(
+                          "Question (${_authProvider.currentUser!.question.length})",
+                          _tabIndex == 0,
+                          () {
+                            _tabIndex = 0;
+                            setState(() {});
+                          },
+                        ).expand(),
+                        _buildLabelContainer(
+                          "Answers (${_authProvider.currentUser!.answer.length})",
+                          _tabIndex == 1,
+                          () {
+                            _tabIndex = 1;
+                            setState(() {});
+                          },
+                        ).expand(),
+                        _buildLabelContainer(
+                          "Files (${_questionProvider.files.where((q) => q.uploadedBy.id == (_authProvider.currentUser == null ? "abc" : _authProvider.currentUser!.id)).length})",
+                          _tabIndex == 2,
+                          () {
+                            _tabIndex = 2;
+                            setState(() {});
+                          },
+                        ).expand(),
                       ],
                     ),
-                  ],
-                )),
-                SliverToBoxAdapter(child: 20.height),
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    child: _authProvider.currentUser!.profilePic == null
-                        ? Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 2),
-                            decoration: BoxDecoration(
-                              color: white,
-                              borderRadius: radius(100),
-                            ),
-                            child: SvgPicture.asset(
-                              svgAvatar,
-                              color: primaryColor,
-                              width: 100,
-                              height: 100,
-                            ),
-                          )
-                        : CachedImageWidget(
-                            url: _authProvider.currentUser!.profilePic!,
-                            height: 50,
-                          ),
                   ),
-                ),
-                SliverToBoxAdapter(child: 10.height),
-                SliverToBoxAdapter(
-                  child: Text(
-                    "${_authProvider.currentUser!.firstName} ${_authProvider.currentUser!.lastName}",
-                    style: boldTextStyle(),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Text(
-                    "@${_authProvider.currentUser!.username}",
-                    style: secondaryTextStyle(),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                // SliverToBoxAdapter(
-                //   child: Text(
-                //     "Bio: Grade 10 Student from Addis Ababa",
-                //     style: secondaryTextStyle(),
-                //     textAlign: TextAlign.center,
-                //   ),
-                // ),
-                SliverToBoxAdapter(
-                  child: TextButton.icon(
-                    onPressed: () {
-                      const EditProfileScreen().launch(
-                        context,
-                        isNewTask: false,
-                      );
-                    },
-                    icon: const Icon(Icons.edit),
-                    label: const Text("Edit Profile"),
-                  ),
-                ),
-
-                SliverToBoxAdapter(
-                  child: Row(
-                    children: [
-                      _buildLabelContainer(
-                        "Question (${_authProvider.currentUser!.question.length})",
-                        _tabIndex == 0,
-                        () {
-                          _tabIndex = 0;
-                          setState(() {});
-                        },
-                      ).expand(),
-                      _buildLabelContainer(
-                        "Answers (${_authProvider.currentUser!.answer.length})",
-                        _tabIndex == 1,
-                        () {
-                          _tabIndex = 1;
-                          setState(() {});
-                        },
-                      ).expand(),
-                      _buildLabelContainer(
-                        "Files (${_questionProvider.files.where((q) => q.uploadedBy.id == (_authProvider.currentUser == null ? "abc" : _authProvider.currentUser!.id)).length})",
-                        _tabIndex == 2,
-                        () {
-                          _tabIndex = 2;
-                          setState(() {});
-                        },
-                      ).expand(),
-                    ],
-                  ),
-                ),
-                const SliverToBoxAdapter(child: Divider()),
-                // SliverList(
-                //   delegate: SliverChildBuilderDelegate(
-                //     (_, index) => Padding(
-                //       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                //       child: QuestionCard(
-                //         question: _authProvider.currentUser.question,
-                //         withCategoryTag: false,
-                //       ),
-                //     ),
-                //     childCount: [question].length,
-                //     // childCount: _availableHandyMen.length,
-                //   ),
-                // ),
-              ],
+                  const SliverToBoxAdapter(child: Divider()),
+                  // SliverList(
+                  //   delegate: SliverChildBuilderDelegate(
+                  //     (_, index) => Padding(
+                  //       padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  //       child: QuestionCard(
+                  //         question: _authProvider.currentUser.question,
+                  //         withCategoryTag: false,
+                  //       ),
+                  //     ),
+                  //     childCount: [question].length,
+                  //     // childCount: _availableHandyMen.length,
+                  //   ),
+                  // ),
+                ],
+              ),
             ),
     );
   }

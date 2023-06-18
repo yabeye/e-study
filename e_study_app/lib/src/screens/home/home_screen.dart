@@ -20,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final QuestionProvider _questionProvider;
+  late final AuthProvider _authProvider;
 
   bool _isLoading = false;
   List<Question> allQuestions = [];
@@ -27,23 +28,37 @@ class _HomeScreenState extends State<HomeScreen> {
   String _filterKey = "All";
 
   Timer? _timer;
+  Timer? _timer2;
 
   @override
   void initState() {
     super.initState();
     _questionProvider = context.read<QuestionProvider>();
+    _authProvider = context.read<AuthProvider>();
 
     afterBuildCreated(() async {
       await fetchAllQuestions();
-      _timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+      _timer = Timer.periodic(const Duration(seconds: 30), (timer) async {
         await fetchAllQuestions();
+      });
+
+      _timer2 = Timer.periodic(const Duration(seconds: 30), (timer) async {
+        await _authProvider.refreshUser();
       });
     });
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void dispose() {
     _timer!.cancel();
+    _timer2!.cancel();
     super.dispose();
   }
 
